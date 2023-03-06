@@ -43,6 +43,7 @@ public class Robot extends TimedRobot {
 
     m_drivetrain = Drivetrain.getInstance();
     m_position = Position.getInstance();
+    //CameraServer.startAutomaticCapture(); // calls a singleton to automatically detect the first connected camera to the roborio. Also, hi nick! ;P
   }
 
   /**
