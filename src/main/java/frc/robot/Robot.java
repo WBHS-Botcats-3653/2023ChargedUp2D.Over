@@ -7,6 +7,10 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Position;
+import edu.wpi.first.cameraserver.CameraServer;
+import frc.robot.subsystems.Limelight;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -15,10 +19,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * project.
  */
 public class Robot extends TimedRobot {
-  private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
+  private static final String kIdleAuto = "Idle Auto";
+  private static final String kParkAuto = "Park Auto";
+  private static final String kMobilizeAuto = "Mobilize Auto";
+  private static final String kChargeAuto = "Charge Station Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
+
+  private Drivetrain m_drivetrain;
+  public Position m_position;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -26,9 +35,14 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
+    m_chooser.setDefaultOption("Idle Auto", kIdleAuto);
+    m_chooser.addOption("Park Auto", kParkAuto);
+    m_chooser.addOption("Mobilize Auto", kMobilizeAuto);
+    m_chooser.addOption("Charge Station Auto", kChargeAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+
+    m_drivetrain = Drivetrain.getInstance();
+    m_position = Position.getInstance();
   }
 
   /**
@@ -53,36 +67,62 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    Constants.resetTimer();
+
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+    m_position.calibrateGyro();
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+    Constants.count(); 
+    
     switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
+      case kParkAuto:
+        // Put park auto code here
+        m_drivetrain.parkPeriodic();
         break;
-      case kDefaultAuto:
+      case kMobilizeAuto:
+        // Put mobilize auto code here
+        m_position.gyroPeriodic();
+        m_drivetrain.mobilizePeriodic();
+        break;
+      case kChargeAuto:
+        // Put charge station auto code here
+        m_position.gyroPeriodic();
+        m_drivetrain.chargePeriodic();
+        break;
+      case kIdleAuto:
       default:
-        // Put default auto code here
+        // Put idle auto code here
+        m_drivetrain.parkPeriodic();
         break;
     }
   }
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    Constants.resetTimer();
+    m_position.calibrateGyro();
+  }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    Constants.count();
+    m_drivetrain.drivePeriodic();
+    m_position.gyroPeriodic();
+  }
 
   /** This function is called once when the robot is disabled. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    m_drivetrain.parkPeriodic();
+  }
 
   /** This function is called periodically when disabled. */
   @Override
