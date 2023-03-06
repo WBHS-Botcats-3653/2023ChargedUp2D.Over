@@ -6,7 +6,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
-/*public class Limelight {
+public class Limelight {
 
     private static Limelight m_singleton = null;
     private NetworkTable m_table;
@@ -26,9 +26,9 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 			m_singleton = new Limelight();
 		}
 		return m_singleton;
-	}
+	}}
 
-    public void limelightPeriodic() {
+    /*public void limelightPeriodic() {
         // pulls the data from the limelight
         x = m_table.getEntry("tx").getDouble(0);
         y = m_table.getEntry("ty").getDouble(0);
@@ -43,7 +43,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
         SmartDashboard.putNumber("Limelight Z", z);
         SmartDashboard.putNumber("Limelight Area", area);
         SmartDashboard.putNumber("Limelight Skew", skew);
-    }}*/
+    }*/
     
     /*public double GetDistanceToTarget(){
         //if there is noting in view return -1
