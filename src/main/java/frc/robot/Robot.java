@@ -43,7 +43,8 @@ public class Robot extends TimedRobot {
 
     m_drivetrain = Drivetrain.getInstance();
     m_position = Position.getInstance();
-    //CameraServer.startAutomaticCapture(); // calls a singleton to automatically detect the first connected camera to the roborio. Also, hi nick! ;P
+    // calls a singleton to automatically detect the first connected camera to the roborio. Also, hi nick! ;P
+    CameraServer.startAutomaticCapture();
   }
 
   /**
@@ -73,7 +74,7 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
-    m_position.calibrateGyro();
+    //m_position.calibrateIMU();
   }
 
   /** This function is called periodically during autonomous. */
@@ -108,7 +109,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     Constants.resetTimer();
-    m_position.calibrateGyro();
+    //m_position.calibrateIMU();
   }
 
   /** This function is called periodically during operator control. */

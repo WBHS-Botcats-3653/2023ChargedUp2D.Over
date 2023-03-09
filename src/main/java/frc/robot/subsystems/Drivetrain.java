@@ -64,8 +64,7 @@ public class Drivetrain {
         m_rearRightMotor.enableCurrentLimit(true);
 
         // invert the right side motors
-        m_frontRightMotor.setInverted(true);
-        m_rearRightMotor.setInverted(true);
+        driveRight.setInverted(true);
 
         // creates the robot drive
 		m_robotDrive = new DifferentialDrive(driveLeft, driveRight);
@@ -95,34 +94,10 @@ public class Drivetrain {
         m_robotDrive.arcadeDrive(0, 0);
     }
 
-    public void chargePeriodic() {
-        if (m_position.getGyroZAngle() > 8) {
-            m_robotDrive.arcadeDrive(0, -0.555);
-        }
-        else if (m_position.getGyroZAngle() < -8) {
-            m_robotDrive.arcadeDrive(0, 0.555);
-        }
-
-        //if (m_position.getAccelY() > 0.3) {
-        //    m_robotDrive.arcadeDrive(-0.4, 0);
-        //}
-        //else if (m_position.getAccelY() < -0.3) {
-        //    m_robotDrive.arcadeDrive(0.4, 0);
-        //}
-    }
+    public void chargePeriodic() {}
     
     public void mobilizePeriodic() {
         if (Constants.getTime() < 6.8 && Constants.getTime() > 3.8) {
-            //if (m_position.getGyroZAngle() > 8) {
-            //    m_robotDrive.arcadeDrive(0, -0.555);
-            //}
-            //else if (m_position.getGyroZAngle() < -8) {
-            //    m_robotDrive.arcadeDrive(0, 0.555);
-            //} else {
-            //    m_robotDrive.arcadeDrive(0.4, 0);
-            //}
-            //m_frontLeftMotor.set(0.4 * 1.0674157303 * 1.0235294118 * 0.9714285714);
-            //m_rearLeftMotor.set(0.4 * 1.0674157303 * 1.0235294118 * 0.9714285714);
             m_robotDrive.arcadeDrive(0.4, 0);
         }
     }   
