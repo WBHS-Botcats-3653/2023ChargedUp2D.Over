@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.ADIS16470_IMU;
 public class Position {
     private static Position m_singleton = null;
 
-    // this is an L3GD20H triple-axis gyro from Adafruit
+    // this is an ADIS16470 IMU from Analog Devices
     private ADIS16470_IMU m_IMU;
 
     private double gyroX;
@@ -50,8 +50,12 @@ public class Position {
         SmartDashboard.putNumber("IMU Accel Z", accelZ);
     }
 
+    public void resetIMU() {
+        m_IMU.reset();
+    }
+
     public void calibrateIMU() {
-        
+        m_IMU.calibrate();
     }
 
     public double getGyroX() {

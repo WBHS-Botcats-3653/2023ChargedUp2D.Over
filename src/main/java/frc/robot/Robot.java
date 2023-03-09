@@ -9,8 +9,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Position;
-import edu.wpi.first.cameraserver.CameraServer;
 import frc.robot.subsystems.Limelight;
+import edu.wpi.first.cameraserver.CameraServer;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -43,8 +43,9 @@ public class Robot extends TimedRobot {
 
     m_drivetrain = Drivetrain.getInstance();
     m_position = Position.getInstance();
-    // calls a singleton to automatically detect the first connected camera to the roborio. Also, hi nick! ;P
+    // calls a singleton to automatically detect the first connected camera to the roborio
     CameraServer.startAutomaticCapture();
+    m_position.calibrateIMU();
   }
 
   /**
@@ -55,7 +56,10 @@ public class Robot extends TimedRobot {
    * SmartDashboard integrated updating.
    */
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+    Constants.count();
+    m_position.gyroPeriodic(); 
+  }
 
   /**
    * This autonomous (along with the chooser code above) shows how to select between different
@@ -74,14 +78,12 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
-    //m_position.calibrateIMU();
+    m_position.calibrateIMU();
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    Constants.count(); 
-    
     switch (m_autoSelected) {
       case kParkAuto:
         // Put park auto code here
@@ -109,21 +111,20 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     Constants.resetTimer();
-    //m_position.calibrateIMU();
+    m_position.resetIMU();
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    Constants.count();
     m_drivetrain.drivePeriodic();
-    m_position.gyroPeriodic();
   }
 
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
     m_drivetrain.parkPeriodic();
+    m_position.calibrateIMU();
   }
 
   /** This function is called periodically when disabled. */
@@ -132,17 +133,27 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when test mode is enabled. */
   @Override
-  public void testInit() {}
+  public void testInit() {
+    Constants.resetTimer();
+    m_position.calibrateIMU();
+  }
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    m_position.gyroPeriodic();
+  }
 
   /** This function is called once when the robot is first started up. */
   @Override
-  public void simulationInit() {}
+  public void simulationInit() {
+    Constants.resetTimer();
+    m_position.calibrateIMU();
+  }
 
   /** This function is called periodically whilst in simulation. */
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    m_position.gyroPeriodic();
+  }
 }

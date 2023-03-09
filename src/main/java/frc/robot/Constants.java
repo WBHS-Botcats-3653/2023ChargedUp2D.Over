@@ -25,9 +25,6 @@ public class Constants {
     // controller ports
     public static final int kP1XboxPort = 0;
     public static final int kP2XboxPort = 0;
-    
-    // ADIS16470 IMU SPI Address
-    //public static final int kIMUSPIAddress = 0;
 
     // DIO ports
 
