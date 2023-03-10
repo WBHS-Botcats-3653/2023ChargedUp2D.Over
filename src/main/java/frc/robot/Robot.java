@@ -45,7 +45,6 @@ public class Robot extends TimedRobot {
     m_position = Position.getInstance();
     // calls a singleton to automatically detect the first connected camera to the roborio
     CameraServer.startAutomaticCapture();
-    m_position.calibrateIMU();
   }
 
   /**
