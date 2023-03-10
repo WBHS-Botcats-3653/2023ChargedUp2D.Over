@@ -26,9 +26,9 @@ public class Limelight {
 			m_singleton = new Limelight();
 		}
 		return m_singleton;
-	}}
+	}
 
-    /*public void limelightPeriodic() {
+    public void limelightPeriodic() {
         // pulls the data from the limelight
         x = m_table.getEntry("tx").getDouble(0);
         y = m_table.getEntry("ty").getDouble(0);
@@ -43,7 +43,7 @@ public class Limelight {
         SmartDashboard.putNumber("Limelight Z", z);
         SmartDashboard.putNumber("Limelight Area", area);
         SmartDashboard.putNumber("Limelight Skew", skew);
-    }*/
+    }}
     
     /*public double GetDistanceToTarget(){
         //if there is noting in view return -1

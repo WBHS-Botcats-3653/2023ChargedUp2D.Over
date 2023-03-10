@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
 import static frc.robot.Constants.*;
-import frc.robot.Constants;
+import frc.robot.Robot;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -97,7 +97,7 @@ public class Drivetrain {
     public void chargePeriodic() {}
     
     public void mobilizePeriodic() {
-        if (Constants.getTime() < 6.8 && Constants.getTime() > 3.8) {
+        if (Robot.getTime() < 6.8 && Robot.getTime() > 3.8) {
             m_robotDrive.arcadeDrive(0.4, 0);
         }
     }   

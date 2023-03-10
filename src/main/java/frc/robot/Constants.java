@@ -28,23 +28,6 @@ public class Constants {
 
     // DIO ports
 
-
-    // this variable is actually not a constant 
-    // it is being used to roughly tell how long its been in each phase of the game 
-    public static double timer = 0;
-
-    public static void count() {
-        timer += 0.02;
-    }
-
-    public static double getTime() {    
-        return timer;
-    }
-
-    public static void resetTimer() {
-        timer = 0;
-    }
-
 /* 
     // target objects dimensions in inches
     public static final double kObjSize = 6;

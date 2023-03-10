@@ -5,12 +5,13 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.cameraserver.CameraServer;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Position;
-import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.Limelight;  
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -27,7 +28,12 @@ public class Robot extends TimedRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   private Drivetrain m_drivetrain;
-  public Position m_position;
+  private Position m_position;
+  private Limelight m_limelight;
+
+  private Timer m_clock = new Timer();
+  private static double time;
+
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -43,6 +49,7 @@ public class Robot extends TimedRobot {
 
     m_drivetrain = Drivetrain.getInstance();
     m_position = Position.getInstance();
+    m_limelight = Limelight.getInstance();
     // calls a singleton to automatically detect the first connected camera to the roborio
     CameraServer.startAutomaticCapture();
   }
@@ -56,8 +63,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    Constants.count();
+    time = m_clock.get();
     m_position.gyroPeriodic(); 
+    m_limelight.limelightPeriodic();
   }
 
   /**
@@ -72,7 +80,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    Constants.resetTimer();
+    m_clock.reset();
 
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
@@ -109,7 +117,7 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-    Constants.resetTimer();
+    m_clock.reset();
     m_position.resetIMU();
   }
 
@@ -122,6 +130,7 @@ public class Robot extends TimedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
+    m_clock.stop();
     m_drivetrain.parkPeriodic();
     m_position.calibrateIMU();
   }
@@ -133,7 +142,7 @@ public class Robot extends TimedRobot {
   /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {
-    Constants.resetTimer();
+    m_clock.reset();
     m_position.calibrateIMU();
   }
 
@@ -146,7 +155,7 @@ public class Robot extends TimedRobot {
   /** This function is called once when the robot is first started up. */
   @Override
   public void simulationInit() {
-    Constants.resetTimer();
+    m_clock.reset();
     m_position.calibrateIMU();
   }
 
@@ -154,5 +163,10 @@ public class Robot extends TimedRobot {
   @Override
   public void simulationPeriodic() {
     m_position.gyroPeriodic();
+  }
+
+  /** This is a getter method to get the seconds since a period has started. */
+  public static double getTime() {
+    return time;
   }
 }
