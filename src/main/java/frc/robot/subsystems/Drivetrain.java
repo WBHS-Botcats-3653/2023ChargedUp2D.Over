@@ -6,6 +6,8 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 public class Drivetrain {
@@ -15,7 +17,8 @@ public class Drivetrain {
 
     private Position m_position;
 
-    private WPI_TalonSRX m_frontLeftMotor, m_rearLeftMotor, m_frontRightMotor, m_rearRightMotor;
+    private WPI_TalonSRX m_leftMaster, m_rightMaster;
+    private WPI_VictorSPX m_leftSlave, m_rightSlave;
 
     private DifferentialDrive m_robotDrive;
 
@@ -26,45 +29,52 @@ public class Drivetrain {
         m_input = OI.getInstance();
         m_position = Position.getInstance();
 
-        m_frontLeftMotor = new WPI_TalonSRX(kFrontRightWheelChannel);
-        m_rearLeftMotor = new WPI_TalonSRX(kRearRightWheelChannel);
-        m_frontRightMotor = new WPI_TalonSRX(kFrontLeftWheelChannel);
-        m_rearRightMotor = new WPI_TalonSRX(kRearLeftWheelChannel);
-
-
-        // groups the wheel motors
-		MotorControllerGroup driveLeft = new MotorControllerGroup(m_frontLeftMotor, m_rearLeftMotor);
-		MotorControllerGroup driveRight = new MotorControllerGroup(m_frontRightMotor, m_rearRightMotor);
+        m_leftMaster = new WPI_TalonSRX(kFrontRightWheelChannel);
+        m_leftSlave = new WPI_VictorSPX(kRearRightWheelChannel);
+        m_rightMaster = new WPI_TalonSRX(kFrontLeftWheelChannel);
+        m_rightSlave = new WPI_VictorSPX(kRearLeftWheelChannel);
 
         // sets the motors to brake mode
-        m_frontLeftMotor.setNeutralMode(NeutralMode.Brake);
-        m_rearLeftMotor.setNeutralMode(NeutralMode.Brake);
-        m_frontRightMotor.setNeutralMode(NeutralMode.Brake);
-        m_rearRightMotor.setNeutralMode(NeutralMode.Brake);
+        m_leftMaster.setNeutralMode(NeutralMode.Brake);
+        m_leftSlave.setNeutralMode(NeutralMode.Brake);
+        m_rightMaster.setNeutralMode(NeutralMode.Brake);
+        m_rightSlave.setNeutralMode(NeutralMode.Brake);
 
         // sets the motors maximum current limit to 40 amps and enforce it when its exceded for 100 milliseconds
-        m_frontLeftMotor.configPeakCurrentLimit(40, 0);
-        m_frontLeftMotor.configPeakCurrentDuration(100, 0);
-        m_frontLeftMotor.configContinuousCurrentLimit(35);
-        m_frontLeftMotor.enableCurrentLimit(true);
+        m_leftMaster.configPeakCurrentLimit(40, 0);
+        m_leftMaster.configPeakCurrentDuration(100, 0);
+        m_leftMaster.configContinuousCurrentLimit(35);
+        m_leftMaster.enableCurrentLimit(true);
 
-        m_rearLeftMotor.configPeakCurrentLimit(40, 0);
-        m_rearLeftMotor.configPeakCurrentDuration(100, 0);
-        m_rearLeftMotor.configContinuousCurrentLimit(35);
-        m_rearLeftMotor.enableCurrentLimit(true);
+        //m_leftSlave.configPeakCurrentLimit(40, 0);
+        //m_leftSlave.configPeakCurrentDuration(100, 0);
+        //m_leftSlave.configContinuousCurrentLimit(35);
+        //m_leftSlave.enableCurrentLimit(true);
 
-        m_frontRightMotor.configPeakCurrentLimit(40, 0);
-        m_frontRightMotor.configPeakCurrentDuration(100, 0);
-        m_frontRightMotor.configContinuousCurrentLimit(35);
-        m_frontRightMotor.enableCurrentLimit(true);
+        m_rightMaster.configPeakCurrentLimit(40, 0);
+        m_rightMaster.configPeakCurrentDuration(100, 0);
+        m_rightMaster.configContinuousCurrentLimit(35);
+        m_rightMaster.enableCurrentLimit(true);
 
-        m_rearRightMotor.configPeakCurrentLimit(40, 0);
-        m_rearRightMotor.configPeakCurrentDuration(100, 0);
-        m_rearRightMotor.configContinuousCurrentLimit(35);
-        m_rearRightMotor.enableCurrentLimit(true);
+        //m_rightSlave.configPeakCurrentLimit(40, 0);
+        //m_rightSlave.configPeakCurrentDuration(100, 0);
+        //m_rightSlave.configContinuousCurrentLimit(35);
+        //m_rightSlave.enableCurrentLimit(true);
 
-        // invert the right side motors
-        driveRight.setInverted(true);
+        // inverts the right side 
+        m_leftMaster.setInverted(false);
+        m_rightMaster.setInverted(true);
+
+        // slave setups
+        m_leftSlave.follow(m_leftMaster);
+        m_rightSlave.follow(m_leftMaster);
+
+        m_leftSlave.setInverted(InvertType.FollowMaster);
+        m_rightSlave.setInverted(InvertType.FollowMaster);
+
+        // groups the wheel motors
+		MotorControllerGroup driveLeft = new MotorControllerGroup(m_leftMaster, m_leftSlave);
+		MotorControllerGroup driveRight = new MotorControllerGroup(m_rightMaster, m_rightSlave);
 
         // creates the robot drive
 		m_robotDrive = new DifferentialDrive(driveLeft, driveRight);
