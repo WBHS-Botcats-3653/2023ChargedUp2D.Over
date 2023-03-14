@@ -2,13 +2,14 @@ package frc.robot.subsystems;
 
 import static frc.robot.Constants.*;
 import frc.robot.Robot;
-import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Drivetrain {
     private static Drivetrain m_singleton = null;
@@ -46,20 +47,10 @@ public class Drivetrain {
         m_leftMaster.configContinuousCurrentLimit(35);
         m_leftMaster.enableCurrentLimit(true);
 
-        //m_leftSlave.configPeakCurrentLimit(40, 0);
-        //m_leftSlave.configPeakCurrentDuration(100, 0);
-        //m_leftSlave.configContinuousCurrentLimit(35);
-        //m_leftSlave.enableCurrentLimit(true);
-
         m_rightMaster.configPeakCurrentLimit(40, 0);
         m_rightMaster.configPeakCurrentDuration(100, 0);
         m_rightMaster.configContinuousCurrentLimit(35);
         m_rightMaster.enableCurrentLimit(true);
-
-        //m_rightSlave.configPeakCurrentLimit(40, 0);
-        //m_rightSlave.configPeakCurrentDuration(100, 0);
-        //m_rightSlave.configContinuousCurrentLimit(35);
-        //m_rightSlave.enableCurrentLimit(true);
 
         // inverts the right side 
         m_leftMaster.setInverted(false);
@@ -94,10 +85,15 @@ public class Drivetrain {
     
     public void drivePeriodic() {
         if (m_input.getP1LeftBumperDown() || m_input.getP1RightBumperDown()) {
-            m_robotDrive.arcadeDrive(m_input.getP1LeftY() / kSlowDriveCoefficient, -m_input.getP1RightX() / kSlowDriveCoefficient);
+            m_robotDrive.arcadeDrive(m_input.getP1LeftY() / kSlowDriveCoefficient, -m_input.getP1RightX() / kRotationDampenerCoefficient / kSlowDriveCoefficient);
         } else {
-            m_robotDrive.arcadeDrive(m_input.getP1LeftY(), -m_input.getP1RightX());
+            m_robotDrive.arcadeDrive(m_input.getP1LeftY(), -m_input.getP1RightX() / kRotationDampenerCoefficient);
         }
+        
+        SmartDashboard.putNumber("Left Drive Supply Current", m_leftMaster.getSupplyCurrent());
+        SmartDashboard.putNumber("Left Drive Stator Current", m_leftMaster.getStatorCurrent());
+        SmartDashboard.putNumber("Right Drive Supply Current", m_rightMaster.getSupplyCurrent());
+        SmartDashboard.putNumber("Right Drive Stator Current", m_rightMaster.getStatorCurrent());
     } 
 
     public void parkPeriodic() {

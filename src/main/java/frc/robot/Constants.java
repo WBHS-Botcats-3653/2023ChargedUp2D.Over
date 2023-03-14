@@ -19,7 +19,8 @@ public class Constants {
     public static final double kThrottleAcceleration = 1;
     public static final double kRotationAcceleartion = 1;
     
-    // divides operator input by this number in slow driving mode
+    // divides operator input by these for a smoother driving experience
+    public static final double kRotationDampenerCoefficient = 1.5;
     public static final double kSlowDriveCoefficient = 2;
 
     // controller ports
