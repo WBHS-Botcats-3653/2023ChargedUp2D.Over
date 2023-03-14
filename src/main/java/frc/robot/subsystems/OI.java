@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import static frc.robot.Constants.*;
+import frc.robot.Robot;
 import edu.wpi.first.wpilibj.XboxController;
 
 // Operator Inputs
@@ -10,8 +11,8 @@ public class OI {
     public XboxController m_p1Controller, m_p2Controller;
 
     private OI() {
-        m_p1Controller = new XboxController(kP1XboxPort);
-        m_p2Controller = new XboxController(kP2XboxPort);
+        m_p1Controller = new XboxController(Robot.kP1XboxPort);
+        m_p2Controller = new XboxController(Robot.kP2XboxPort);
     }
 
     public static OI getInstance() {

@@ -25,33 +25,64 @@ public class Robot extends TimedRobot {
   private static final String kMobilizeAuto = "Mobilize Auto";
   private static final String kChargeAuto = "Charge Station Auto";
   private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  private final SendableChooser<String> m_autoChooser = new SendableChooser<>();
+
+  private static final String kOnePlayerMode = "One Player Mode";
+  private static final String kTwoPlayerMode = "Two Player Mode";
+  private String m_controlModeSelected;
+  private final SendableChooser<String> m_controllerChooser = new SendableChooser<>();
+
+  public static int kP1XboxPort;
+  public static int kP2XboxPort;
 
   private Drivetrain m_drivetrain;
   private Position m_position;
   private Limelight m_limelight;
 
   private Timer m_clock = new Timer();
-  private static double time;
+  public static double time;
 
-
+  
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
   @Override
   public void robotInit() {
-    m_chooser.setDefaultOption("Idle Auto", kIdleAuto);
-    m_chooser.addOption("Park Auto", kParkAuto);
-    m_chooser.addOption("Mobilize Auto", kMobilizeAuto);
-    m_chooser.addOption("Charge Station Auto", kChargeAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
-
     m_drivetrain = Drivetrain.getInstance();
     m_position = Position.getInstance();
     m_limelight = Limelight.getInstance();
     // calls a singleton to automatically detect the first connected camera to the roborio
     CameraServer.startAutomaticCapture();
+
+    m_autoChooser.setDefaultOption("Idle Auto", kIdleAuto);
+    m_autoChooser.addOption("Park Auto", kParkAuto);
+    m_autoChooser.addOption("Mobilize Auto", kMobilizeAuto);
+    m_autoChooser.addOption("Charge Station Auto", kChargeAuto);
+    SmartDashboard.putData("Auto choices", m_autoChooser);
+
+    m_controllerChooser.setDefaultOption("One Player Mode", kOnePlayerMode);
+    m_controllerChooser.addOption("Two Player Mode", kTwoPlayerMode);
+    SmartDashboard.putData("Control Mode", m_controllerChooser);
+
+    m_controlModeSelected = m_controllerChooser.getSelected();
+    System.out.println("Control Mode Selected: " + m_controlModeSelected);
+    
+    switch (m_controlModeSelected) {
+      case kTwoPlayerMode:
+        // Put two player mode initializations here
+        // controller ports
+        kP1XboxPort = 0;
+        kP2XboxPort = 1;
+        break;
+      case kOnePlayerMode:
+      default:
+        // Put one player mode intializations here
+        // controller ports
+        kP1XboxPort = 0;
+        kP2XboxPort = 0;
+        break;
+    }
   }
 
   /**
@@ -82,9 +113,10 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     m_clock.reset();
 
-    m_autoSelected = m_chooser.getSelected();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+    m_autoSelected = m_autoChooser.getSelected();
+    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
+    
     m_position.calibrateIMU();
   }
 
@@ -163,10 +195,5 @@ public class Robot extends TimedRobot {
   @Override
   public void simulationPeriodic() {
     m_position.gyroPeriodic();
-  }
-
-  /** This is a getter method to get the seconds since a period has started. */
-  public static double getTime() {
-    return time;
   }
 }

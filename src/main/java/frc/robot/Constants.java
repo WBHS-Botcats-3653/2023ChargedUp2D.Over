@@ -5,7 +5,6 @@ package frc.robot;
  * robot. Most commonly IDs and ports for electronics.
  */
 public class Constants {
-
     /**
      * motor controller IDs
      */
@@ -23,11 +22,12 @@ public class Constants {
     public static final double kRotationDampenerCoefficient = 1.5;
     public static final double kSlowDriveCoefficient = 2;
 
-    // controller ports
-    public static final int kP1XboxPort = 0;
-    public static final int kP2XboxPort = 0;
-
     // DIO ports
+
+
+    // xbox controller ports
+    //public static int kP1XboxPort = 0;
+    //public static int kP2XboxPort = 0;
 
 /* 
     // target objects dimensions in inches

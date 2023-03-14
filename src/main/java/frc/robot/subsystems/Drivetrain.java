@@ -103,7 +103,7 @@ public class Drivetrain {
     public void chargePeriodic() {}
     
     public void mobilizePeriodic() {
-        if (Robot.getTime() < 6.8 && Robot.getTime() > 3.8) {
+        if (Robot.time < 6.8 && Robot.time > 3.8) {
             m_robotDrive.arcadeDrive(0.4, 0);
         }
     }   
