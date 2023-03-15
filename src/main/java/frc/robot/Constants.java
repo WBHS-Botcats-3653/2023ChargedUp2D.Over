@@ -9,10 +9,15 @@ public class Constants {
      * motor controller IDs
      */
     // drivetrain
-    public static final int kFrontLeftWheelChannel = 11;
-    public static final int kRearLeftWheelChannel = 12;
-    public static final int kFrontRightWheelChannel = 13;
-    public static final int kRearRightWheelChannel = 14;
+    public static final int kFrontLeftWheelChannel = 9;
+    public static final int kRearLeftWheelChannel = 6;
+    public static final int kFrontRightWheelChannel = 7;
+    public static final int kRearRightWheelChannel = 8;
+    // elevator
+    public static final int kLeftElevatorChannel = 19;
+    public static final int kRightElevatorChannel = 18;
+    // gripper
+    public static final int kGripperChannel = 17;
 
     // drive control accelerations
     public static final double kThrottleAcceleration = 1;
