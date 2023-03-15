@@ -16,8 +16,8 @@ public class Constants {
     // elevator
     public static final int kLeftElevatorChannel = 19;
     public static final int kRightElevatorChannel = 18;
-    // gripper
-    public static final int kGripperChannel = 17;
+    // grabber
+    public static final int kGrabberChannel = 17;
 
     // drive control accelerations
     public static final double kThrottleAcceleration = 1;

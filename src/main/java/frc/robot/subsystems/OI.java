@@ -51,12 +51,36 @@ public class OI {
         return m_p1Controller.getRightTriggerAxis();
     }
 
+    public boolean getP1LeftTriggerDown() {
+        return m_p1Controller.getLeftTriggerAxis() > 0.05;
+    }
+
+    public boolean getP1RightTriggerDown() {
+        return m_p1Controller.getRightTriggerAxis() > 0.05;
+    }
+
     public boolean getP1LeftBumperDown() {
         return m_p1Controller.getLeftBumper();
     }
 
     public boolean getP1RightBumperDown() {
         return m_p1Controller.getRightBumper();
+    }
+
+    public boolean getP1ADown() {
+        return m_p1Controller.getAButton();
+    }
+
+    public boolean getP1BDown() {
+        return m_p1Controller.getBButton();
+    }
+
+    public boolean getP1XDown() {
+        return m_p1Controller.getXButton();
+    }
+
+    public boolean getP1YDown() {
+        return m_p1Controller.getYButton();
     }
 
     /** 
@@ -89,11 +113,35 @@ public class OI {
         return m_p2Controller.getRightTriggerAxis();
     }
 
+    public boolean getP2LeftTriggerDown() {
+        return m_p1Controller.getLeftTriggerAxis() > 0.05;
+    }
+
+    public boolean getP2RightTriggerDown() {
+        return m_p1Controller.getRightTriggerAxis() > 0.05;
+    }
+
     public boolean getP2LeftBumperDown() {
         return m_p2Controller.getLeftBumper();
     }
 
     public boolean getP2RightBumperDown() {
         return m_p2Controller.getRightBumper();
+    }
+
+    public boolean getP2ADown() {
+        return m_p1Controller.getAButton();
+    }
+
+    public boolean getP2BDown() {
+        return m_p1Controller.getBButton();
+    }
+
+    public boolean getP2XDown() {
+        return m_p1Controller.getXButton();
+    }
+
+    public boolean getP2YDown() {
+        return m_p1Controller.getYButton();
     }
 }
