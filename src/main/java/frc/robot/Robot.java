@@ -49,11 +49,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    m_drivetrain = Drivetrain.getInstance();
-    m_position = Position.getInstance();
-    m_limelight = Limelight.getInstance();
+    //m_drivetrain = Drivetrain.getInstance();
+    //m_position = Position.getInstance();
+    //m_limelight = Limelight.getInstance();
     // calls a singleton to automatically detect the first connected camera to the roborio
-    CameraServer.startAutomaticCapture();
+    //CameraServer.startAutomaticCapture();
 
     m_autoChooser.setDefaultOption("Idle Auto", kIdleAuto);
     m_autoChooser.addOption("Park Auto", kParkAuto);
@@ -95,8 +95,8 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     time = m_clock.get();
-    m_position.gyroPeriodic(); 
-    m_limelight.limelightPeriodic();
+    //m_position.gyroPeriodic(); 
+    //m_limelight.limelightPeriodic();
   }
 
   /**
@@ -117,7 +117,7 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_autoChooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     
-    m_position.calibrateIMU();
+    //m_position.calibrateIMU();
   }
 
   /** This function is called periodically during autonomous. */
@@ -126,22 +126,22 @@ public class Robot extends TimedRobot {
     switch (m_autoSelected) {
       case kParkAuto:
         // Put park auto code here
-        m_drivetrain.parkPeriodic();
+        //m_drivetrain.parkPeriodic();
         break;
       case kMobilizeAuto:
         // Put mobilize auto code here
-        m_position.gyroPeriodic();
-        m_drivetrain.mobilizePeriodic();
+        //m_position.gyroPeriodic();
+        //m_drivetrain.mobilizePeriodic();
         break;
       case kChargeAuto:
         // Put charge station auto code here
-        m_position.gyroPeriodic();
-        m_drivetrain.chargePeriodic();
+        //m_position.gyroPeriodic();
+        //m_drivetrain.chargePeriodic();
         break;
       case kIdleAuto:
       default:
         // Put idle auto code here
-        m_drivetrain.parkPeriodic();
+        //m_drivetrain.parkPeriodic();
         break;
     }
   }
@@ -150,21 +150,21 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     m_clock.reset();
-    m_position.resetIMU();
+    //m_position.resetIMU();
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    m_drivetrain.drivePeriodic();
+    //m_drivetrain.drivePeriodic();
   }
 
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
     m_clock.stop();
-    m_drivetrain.parkPeriodic();
-    m_position.calibrateIMU();
+    //m_drivetrain.parkPeriodic();
+    //m_position.calibrateIMU();
   }
 
   /** This function is called periodically when disabled. */
@@ -175,25 +175,25 @@ public class Robot extends TimedRobot {
   @Override
   public void testInit() {
     m_clock.reset();
-    m_position.calibrateIMU();
+    //m_position.calibrateIMU();
   }
 
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
-    m_position.gyroPeriodic();
+    //m_position.gyroPeriodic();
   }
 
   /** This function is called once when the robot is first started up. */
   @Override
   public void simulationInit() {
     m_clock.reset();
-    m_position.calibrateIMU();
+    //m_position.calibrateIMU();
   }
 
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {
-    m_position.gyroPeriodic();
+    //m_position.gyroPeriodic();
   }
 }
