@@ -49,6 +49,22 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    switch (m_controlModeSelected) {
+      case kTwoPlayerMode:
+        // Put two player mode initializations here
+        // controller ports
+        kP1XboxPort = 0;
+        kP2XboxPort = 1;
+        break;
+      case kOnePlayerMode:
+      default:
+        // Put one player mode intializations here
+        // controller ports
+        kP1XboxPort = 0;
+        kP2XboxPort = 0;
+        break;
+    }
+    
     //m_drivetrain = Drivetrain.getInstance();
     //m_position = Position.getInstance();
     //m_limelight = Limelight.getInstance();
@@ -67,22 +83,6 @@ public class Robot extends TimedRobot {
 
     m_controlModeSelected = m_controllerChooser.getSelected();
     System.out.println("Control Mode Selected: " + m_controlModeSelected);
-    
-    switch (m_controlModeSelected) {
-      case kTwoPlayerMode:
-        // Put two player mode initializations here
-        // controller ports
-        kP1XboxPort = 0;
-        kP2XboxPort = 1;
-        break;
-      case kOnePlayerMode:
-      default:
-        // Put one player mode intializations here
-        // controller ports
-        kP1XboxPort = 0;
-        kP2XboxPort = 0;
-        break;
-    }
   }
 
   /**

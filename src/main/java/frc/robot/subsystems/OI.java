@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.*;
 import frc.robot.Robot;
 import edu.wpi.first.wpilibj.XboxController;
 
