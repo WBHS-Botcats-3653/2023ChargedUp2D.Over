@@ -5,13 +5,13 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
+//import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.cameraserver.CameraServer;
+//import edu.wpi.first.cameraserver.CameraServer;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Position;
-import frc.robot.subsystems.Limelight;  
+//import frc.robot.subsystems.Position;
+//import frc.robot.subsystems.Limelight;  
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -27,20 +27,20 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_autoChooser = new SendableChooser<>();
 
-  private static final String kOnePlayerMode = "One Player Mode";
-  private static final String kTwoPlayerMode = "Two Player Mode";
-  private String m_controlModeSelected;
-  private final SendableChooser<String> m_controllerChooser = new SendableChooser<>();
+  //private static final String kOnePlayerMode = "One Player Mode";
+  //private static final String kTwoPlayerMode = "Two Player Mode";
+  //private String m_controlModeSelected;
+  //private final SendableChooser<String> m_controllerChooser = new SendableChooser<>();
 
-  public static int kP1XboxPort;
-  public static int kP2XboxPort;
+  public static int kP1XboxPort = 0;
+  public static int kP2XboxPort = 0;
 
-  private Drivetrain m_drivetrain;
-  private Position m_position;
-  private Limelight m_limelight;
+  //private Drivetrain m_drivetrain;
+  //private Position m_position;
+  //private Limelight m_limelight;
 
-  private Timer m_clock = new Timer();
-  public static double time;
+  //private Timer m_clock = new Timer();
+  //public static double time;
 
   
   /**
@@ -49,22 +49,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    switch (m_controlModeSelected) {
-      case kTwoPlayerMode:
-        // Put two player mode initializations here
-        // controller ports
-        kP1XboxPort = 0;
-        kP2XboxPort = 1;
-        break;
-      case kOnePlayerMode:
-      default:
-        // Put one player mode intializations here
-        // controller ports
-        kP1XboxPort = 0;
-        kP2XboxPort = 0;
-        break;
-    }
-    
     //m_drivetrain = Drivetrain.getInstance();
     //m_position = Position.getInstance();
     //m_limelight = Limelight.getInstance();
@@ -77,12 +61,28 @@ public class Robot extends TimedRobot {
     m_autoChooser.addOption("Charge Station Auto", kChargeAuto);
     SmartDashboard.putData("Auto choices", m_autoChooser);
 
-    m_controllerChooser.setDefaultOption("One Player Mode", kOnePlayerMode);
-    m_controllerChooser.addOption("Two Player Mode", kTwoPlayerMode);
-    SmartDashboard.putData("Control Mode", m_controllerChooser);
+    //m_controllerChooser.setDefaultOption("One Player Mode", kOnePlayerMode);
+    //m_controllerChooser.addOption("Two Player Mode", kTwoPlayerMode);
+    //SmartDashboard.putData("Control Mode", m_controllerChooser);
 
-    m_controlModeSelected = m_controllerChooser.getSelected();
-    System.out.println("Control Mode Selected: " + m_controlModeSelected);
+    //m_controlModeSelected = m_controllerChooser.getSelected();
+    //System.out.println("Control Mode Selected: " + m_controlModeSelected);
+
+    //switch (m_controlModeSelected) {
+    //  case kTwoPlayerMode:
+    //    // Put two player mode initializations here
+    //    // controller ports
+    //    kP1XboxPort = 0;
+    //    kP2XboxPort = 1;
+    //    break;
+    //  case kOnePlayerMode:
+    //  default:
+    //    // Put one player mode intializations here
+    //    // controller ports
+    //    kP1XboxPort = 0;
+    //    kP2XboxPort = 0;
+    //    break;
+    //}
   }
 
   /**
@@ -94,7 +94,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    time = m_clock.get();
+    //time = m_clock.get();
     //m_position.gyroPeriodic(); 
     //m_limelight.limelightPeriodic();
   }
@@ -111,7 +111,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_clock.reset();
+    //m_clock.reset();
 
     System.out.println("Auto selected: " + m_autoSelected);
     m_autoSelected = m_autoChooser.getSelected();
@@ -149,7 +149,7 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-    m_clock.reset();
+    //m_clock.reset();
     //m_position.resetIMU();
   }
 
@@ -162,7 +162,7 @@ public class Robot extends TimedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
-    m_clock.stop();
+    //m_clock.stop();
     //m_drivetrain.parkPeriodic();
     //m_position.calibrateIMU();
   }
@@ -174,7 +174,7 @@ public class Robot extends TimedRobot {
   /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {
-    m_clock.reset();
+    //m_clock.reset();
     //m_position.calibrateIMU();
   }
 
@@ -187,7 +187,7 @@ public class Robot extends TimedRobot {
   /** This function is called once when the robot is first started up. */
   @Override
   public void simulationInit() {
-    m_clock.reset();
+    //m_clock.reset();
     //m_position.calibrateIMU();
   }
 

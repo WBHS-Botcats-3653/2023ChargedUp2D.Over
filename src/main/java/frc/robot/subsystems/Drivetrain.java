@@ -16,7 +16,7 @@ public class Drivetrain {
 
     private OI m_input;
 
-    private Position m_position;
+    //private Position m_position;
 
     private WPI_TalonSRX m_leftMaster, m_rightMaster;
     private WPI_VictorSPX m_leftSlave, m_rightSlave;
@@ -28,7 +28,7 @@ public class Drivetrain {
 
     private Drivetrain() {
         m_input = OI.getInstance();
-        m_position = Position.getInstance();
+        //m_position = Position.getInstance();
 
         m_leftMaster = new WPI_TalonSRX(kFrontRightWheelChannel);
         m_leftSlave = new WPI_VictorSPX(kRearRightWheelChannel);
@@ -42,15 +42,15 @@ public class Drivetrain {
         m_rightSlave.setNeutralMode(NeutralMode.Brake);
 
         // sets the motors maximum current limit to 40 amps and enforce it when its exceded for 100 milliseconds
-        m_leftMaster.configPeakCurrentLimit(40, 0);
-        m_leftMaster.configPeakCurrentDuration(100, 0);
-        m_leftMaster.configContinuousCurrentLimit(35);
-        m_leftMaster.enableCurrentLimit(true);
+        //m_leftMaster.configPeakCurrentLimit(40, 0);
+        //m_leftMaster.configPeakCurrentDuration(100, 0);
+        //m_leftMaster.configContinuousCurrentLimit(35);
+        //m_leftMaster.enableCurrentLimit(true);
 
-        m_rightMaster.configPeakCurrentLimit(40, 0);
-        m_rightMaster.configPeakCurrentDuration(100, 0);
-        m_rightMaster.configContinuousCurrentLimit(35);
-        m_rightMaster.enableCurrentLimit(true);
+        //m_rightMaster.configPeakCurrentLimit(40, 0);
+        //m_rightMaster.configPeakCurrentDuration(100, 0);
+        //m_rightMaster.configContinuousCurrentLimit(35);
+        //m_rightMaster.enableCurrentLimit(true);
 
         // inverts the right side 
         m_leftMaster.setInverted(false);
@@ -84,7 +84,7 @@ public class Drivetrain {
 	}
     
     public void drivePeriodic() {
-        if (m_input.getP1LeftBumperDown() || m_input.getP1RightBumperDown()) {
+        if (m_input.getP1ADown() || m_input.getP1BDown() || m_input.getP1XDown() || m_input.getP1YDown()) {
             m_robotDrive.arcadeDrive(m_input.getP1LeftY() / kSlowDriveCoefficient, -m_input.getP1RightX() / kRotationDampenerCoefficient / kSlowDriveCoefficient);
         } else {
             m_robotDrive.arcadeDrive(m_input.getP1LeftY(), -m_input.getP1RightX() / kRotationDampenerCoefficient);
@@ -103,8 +103,8 @@ public class Drivetrain {
     public void chargePeriodic() {}
     
     public void mobilizePeriodic() {
-        if (Robot.time < 6.8 && Robot.time > 3.8) {
-            m_robotDrive.arcadeDrive(0.4, 0);
-        }
+        //if (Robot.time < 6.8 && Robot.time > 3.8) {
+        //    m_robotDrive.arcadeDrive(0.4, 0);
+        //}
     }   
 }

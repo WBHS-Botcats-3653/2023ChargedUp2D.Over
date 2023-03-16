@@ -37,10 +37,10 @@ public class Grabber {
     }
 
     public void grabPeriodic() {
-        if (m_input.getP2XDown() || m_input.getP2YDown()) {
+        if (m_input.getP2LeftBumperDown()) {
             hasInput = true;
             m_grabber.set(6);
-        } else if (m_input.getP2ADown() || m_input.getP2BDown()) {
+        } else if (m_input.getP2RightBumperDown()) {
             hasInput = true;
             m_grabber.set(-0.2);
         } else {
