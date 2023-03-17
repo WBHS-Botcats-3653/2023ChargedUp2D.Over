@@ -26,6 +26,9 @@ public class Grabber {
 
         // sets the motor to break mode
         m_grabber.setNeutralMode(NeutralMode.Brake);
+
+        // makes sure motor is not inverted 
+        m_grabber.setInverted(false);
     }
 
     // returns an instance of Grabber, creating an instance only when one does not already exist
@@ -39,7 +42,7 @@ public class Grabber {
     public void grabPeriodic() {
         if (m_input.getP2LeftBumperDown()) {
             hasInput = true;
-            m_grabber.set(6);
+            m_grabber.set(0.6);
         } else if (m_input.getP2RightBumperDown()) {
             hasInput = true;
             m_grabber.set(-0.2);

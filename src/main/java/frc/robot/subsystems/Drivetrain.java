@@ -4,7 +4,7 @@ import static frc.robot.Constants.*;
 import frc.robot.Robot;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+//import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -30,11 +30,11 @@ public class Drivetrain {
         m_input = OI.getInstance();
         //m_position = Position.getInstance();
 
-        m_leftMaster = new WPI_TalonSRX(kFrontRightWheelChannel);
-        m_leftSlave = new WPI_VictorSPX(kRearRightWheelChannel);
-        m_rightMaster = new WPI_TalonSRX(kFrontLeftWheelChannel);
-        m_rightSlave = new WPI_VictorSPX(kRearLeftWheelChannel);
-
+        m_leftMaster = new WPI_TalonSRX(kFrontLeftWheelChannel);
+        m_leftSlave = new WPI_VictorSPX(kRearLeftWheelChannel);
+        m_rightMaster = new WPI_TalonSRX(kFrontRightWheelChannel);
+        m_rightSlave = new WPI_VictorSPX(kRearRightWheelChannel);
+ 
         // sets the motors to brake mode
         m_leftMaster.setNeutralMode(NeutralMode.Brake);
         m_leftSlave.setNeutralMode(NeutralMode.Brake);
@@ -42,15 +42,15 @@ public class Drivetrain {
         m_rightSlave.setNeutralMode(NeutralMode.Brake);
 
         // sets the motors maximum current limit to 40 amps and enforce it when its exceded for 100 milliseconds
-        //m_leftMaster.configPeakCurrentLimit(40, 0);
-        //m_leftMaster.configPeakCurrentDuration(100, 0);
-        //m_leftMaster.configContinuousCurrentLimit(35);
-        //m_leftMaster.enableCurrentLimit(true);
+        m_leftMaster.configPeakCurrentLimit(40, 0);
+        m_leftMaster.configPeakCurrentDuration(100, 0);
+        m_leftMaster.configContinuousCurrentLimit(35);
+        m_leftMaster.enableCurrentLimit(true);
 
-        //m_rightMaster.configPeakCurrentLimit(40, 0);
-        //m_rightMaster.configPeakCurrentDuration(100, 0);
-        //m_rightMaster.configContinuousCurrentLimit(35);
-        //m_rightMaster.enableCurrentLimit(true);
+        m_rightMaster.configPeakCurrentLimit(40, 0);
+        m_rightMaster.configPeakCurrentDuration(100, 0);
+        m_rightMaster.configContinuousCurrentLimit(35);
+        m_rightMaster.enableCurrentLimit(true);
 
         // inverts the right side 
         m_leftMaster.setInverted(false);
@@ -64,11 +64,11 @@ public class Drivetrain {
         m_rightSlave.setInverted(InvertType.FollowMaster);
 
         // groups the wheel motors
-		MotorControllerGroup driveLeft = new MotorControllerGroup(m_leftMaster, m_leftSlave);
-		MotorControllerGroup driveRight = new MotorControllerGroup(m_rightMaster, m_rightSlave);
+		//MotorControllerGroup driveLeft = new MotorControllerGroup(m_leftMaster, m_leftSlave);
+		//MotorControllerGroup driveRight = new MotorControllerGroup(m_rightMaster, m_rightSlave);
 
         // creates the robot drive
-		m_robotDrive = new DifferentialDrive(driveLeft, driveRight);
+		m_robotDrive = new DifferentialDrive(m_leftMaster, m_rightMaster);
 
         // slew rate limiters create limits on the acceleration for smoother driving
         m_throttleFilter = new SlewRateLimiter(kThrottleAcceleration);
@@ -85,7 +85,7 @@ public class Drivetrain {
     
     public void drivePeriodic() {
         if (m_input.getP1ADown() || m_input.getP1BDown() || m_input.getP1XDown() || m_input.getP1YDown()) {
-            m_robotDrive.arcadeDrive(m_input.getP1LeftY() / kSlowDriveCoefficient, -m_input.getP1RightX() / kRotationDampenerCoefficient / kSlowDriveCoefficient);
+            m_robotDrive.arcadeDrive(m_input.getP1LeftY() / kSlowDriveCoefficient, -m_input.getP1RightX() / kSlowDriveCoefficient);
         } else {
             m_robotDrive.arcadeDrive(m_input.getP1LeftY(), -m_input.getP1RightX() / kRotationDampenerCoefficient);
         }
@@ -103,8 +103,8 @@ public class Drivetrain {
     public void chargePeriodic() {}
     
     public void mobilizePeriodic() {
-        //if (Robot.time < 6.8 && Robot.time > 3.8) {
-        //    m_robotDrive.arcadeDrive(0.4, 0);
-        //}
+        if (Robot.time < 6.8 && Robot.time > 3.8) {
+            m_robotDrive.arcadeDrive(0.4, 0);
+        }
     }   
 }
