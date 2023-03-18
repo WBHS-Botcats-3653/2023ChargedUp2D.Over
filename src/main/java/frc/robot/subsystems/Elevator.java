@@ -24,8 +24,8 @@ public class Elevator {
         m_input = OI.getInstance();
         m_position = Position.getInstance();
 
-        m_elevatorMaster = new WPI_TalonSRX(kLeftElevatorChannel);
-        m_elevatorSlave = new WPI_VictorSPX(kRightElevatorChannel);
+        m_elevatorMaster = new WPI_TalonSRX(kLeftElevatorID);   // ID of 19
+        m_elevatorSlave = new WPI_VictorSPX(kRightElevatorID);  // ID of 18
 
         // sets the motors to brake mode
         m_elevatorMaster.setNeutralMode(NeutralMode.Brake);

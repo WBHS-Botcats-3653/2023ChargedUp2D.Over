@@ -22,7 +22,7 @@ public class Grabber {
         m_input = OI.getInstance();
         m_position = Position.getInstance();
 
-        m_grabber = new WPI_TalonSRX(kGrabberChannel);
+        m_grabber = new WPI_TalonSRX(kGrabberID);  // ID of 17
 
         // sets the motor to break mode
         m_grabber.setNeutralMode(NeutralMode.Brake);

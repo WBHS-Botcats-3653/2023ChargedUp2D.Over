@@ -33,13 +33,4 @@ public class Constants {
     // xbox controller ports
     //public static int kP1XboxPort = 0;
     //public static int kP2XboxPort = 0;
-
-/* 
-    // target objects dimensions in inches
-    public static final double kObjSize = 6;
-    // the vertical view angle from forward axis
-    public static final double kLimelightVerticalViewAngle = 20.5;
-    // the horizontal view angle from forward axis
-    public static final double kLimelightHorizontalViewAngle = 27;
-*/
 }

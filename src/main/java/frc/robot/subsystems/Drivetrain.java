@@ -30,10 +30,10 @@ public class Drivetrain {
         m_input = OI.getInstance();
         //m_position = Position.getInstance();
 
-        m_leftMaster = new WPI_TalonSRX(kFrontLeftWheelChannel);
-        m_leftSlave = new WPI_VictorSPX(kRearLeftWheelChannel);
-        m_rightMaster = new WPI_TalonSRX(kFrontRightWheelChannel);
-        m_rightSlave = new WPI_VictorSPX(kRearRightWheelChannel);
+        m_leftMaster = new WPI_TalonSRX(kFrontLeftWheelID);   // ID of 9
+        m_leftSlave = new WPI_VictorSPX(kRearLeftWheelID);    // ID of 6
+        m_rightMaster = new WPI_TalonSRX(kFrontRightWheelID); // ID of 7
+        m_rightSlave = new WPI_VictorSPX(kRearRightWheelID);  // ID of 8
  
         // sets the motors to brake mode
         m_leftMaster.setNeutralMode(NeutralMode.Brake);
@@ -41,14 +41,14 @@ public class Drivetrain {
         m_rightMaster.setNeutralMode(NeutralMode.Brake);
         m_rightSlave.setNeutralMode(NeutralMode.Brake);
 
-        // sets the motors maximum current limit to 40 amps and enforce it when its exceded for 100 milliseconds
+        // sets the motors maximum current limit to 40 amps and enforce it when its exceded for 20 milliseconds
         m_leftMaster.configPeakCurrentLimit(40, 0);
-        m_leftMaster.configPeakCurrentDuration(100, 0);
+        m_leftMaster.configPeakCurrentDuration(20, 0);
         m_leftMaster.configContinuousCurrentLimit(35);
         m_leftMaster.enableCurrentLimit(true);
 
         m_rightMaster.configPeakCurrentLimit(40, 0);
-        m_rightMaster.configPeakCurrentDuration(100, 0);
+        m_rightMaster.configPeakCurrentDuration(20, 0);
         m_rightMaster.configContinuousCurrentLimit(35);
         m_rightMaster.enableCurrentLimit(true);
 
