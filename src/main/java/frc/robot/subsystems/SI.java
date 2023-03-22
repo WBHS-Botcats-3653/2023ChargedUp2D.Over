@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import static frc.robot.Constants.*;
+
 import edu.wpi.first.wpilibj.DigitalInput;
 
 // Sensor Inputs

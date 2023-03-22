@@ -2,8 +2,10 @@ package frc.robot.subsystems;
 
 import static frc.robot.Constants.*;
 import frc.robot.Robot;
+
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Grabber {
@@ -11,7 +13,7 @@ public class Grabber {
 
     private OI m_input;
 
-    private Position m_position;
+    private Orientation m_position;
 
     private WPI_TalonSRX m_grabber;
 
@@ -20,7 +22,7 @@ public class Grabber {
 
     private Grabber() {
         m_input = OI.getInstance();
-        m_position = Position.getInstance();
+        m_position = Orientation.getInstance();
 
         m_grabber = new WPI_TalonSRX(kGrabberID);  // ID of 17
 

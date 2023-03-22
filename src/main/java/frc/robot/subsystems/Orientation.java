@@ -1,12 +1,13 @@
 package frc.robot.subsystems;
 
 import static frc.robot.Constants.*;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
 
-public class Position {
-    private static Position m_singleton = null;
+public class Orientation {
+    private static Orientation m_singleton = null;
 
     // this is an ADIS16470 IMU from Analog Devices
     private ADIS16470_IMU m_IMU;
@@ -19,20 +20,20 @@ public class Position {
     private double accelY;
     private double accelZ;
 
-    private Position() {
+    private Orientation() {
         // initializes the IMU
         m_IMU = new ADIS16470_IMU();
     }
 
     // returns an instance of Position, creating an instance only when one does not already exist
-    public static Position getInstance() {
+    public static Orientation getInstance() {
         if (m_singleton == null) {
-            m_singleton = new Position();
+            m_singleton = new Orientation();
         }
         return m_singleton;
     }
 
-    public void gyroPeriodic() {
+    public void IMUPeriodic() {
         // stores the gyro information from the IMU
         gyroX = m_IMU.getXFilteredAccelAngle();
         gyroY = m_IMU.getYFilteredAccelAngle();

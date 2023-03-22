@@ -9,8 +9,9 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.cameraserver.CameraServer;
+
 import frc.robot.subsystems.Drivetrain;
-//import frc.robot.subsystems.Position;
+import frc.robot.subsystems.Orientation;
 //import frc.robot.subsystems.Limelight;  
 
 /**
@@ -36,7 +37,7 @@ public class Robot extends TimedRobot {
   public static int kP2XboxPort;
 
   private Drivetrain m_drivetrain;
-  //private Position m_position;
+  private Orientation m_orientation;
   //private Limelight m_limelight;
 
   private Timer m_clock = new Timer();
@@ -50,7 +51,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     m_drivetrain = Drivetrain.getInstance();
-    //m_position = Position.getInstance();
+    m_orientation = Orientation.getInstance();
     //m_limelight = Limelight.getInstance();
     // calls a singleton to automatically detect the first connected camera to the roborio
     //CameraServer.startAutomaticCapture();
@@ -96,7 +97,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     time = m_clock.get();
-    //m_position.gyroPeriodic(); 
+    m_orientation.IMUPeriodic(); 
     //m_limelight.limelightPeriodic();
   }
 
@@ -118,7 +119,8 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_autoChooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     
-    //m_position.calibrateIMU();
+    m_drivetrain.resetEncoders();
+    m_orientation.calibrateIMU();
   }
 
   /** This function is called periodically during autonomous. */
@@ -131,12 +133,12 @@ public class Robot extends TimedRobot {
         break;
       case kMobilizeAuto:
         // Put mobilize auto code here
-        //m_position.gyroPeriodic();
+        m_orientation.IMUPeriodic();
         m_drivetrain.mobilizePeriodic();
         break;
       case kChargeAuto:
         // Put charge station auto code here
-        //m_position.gyroPeriodic();
+        m_orientation.IMUPeriodic();
         m_drivetrain.chargePeriodic();
         break;
       case kIdleAuto:
@@ -151,7 +153,8 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     m_clock.reset();
-    //m_position.resetIMU();
+    m_drivetrain.resetEncoders();
+    m_orientation.resetIMU();
   }
 
   /** This function is called periodically during operator control. */
@@ -165,7 +168,8 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
     m_clock.stop();
     m_drivetrain.parkPeriodic();
-    //m_position.calibrateIMU();
+    m_drivetrain.resetEncoders();
+    m_orientation.calibrateIMU();
   }
 
   /** This function is called periodically when disabled. */
@@ -176,25 +180,27 @@ public class Robot extends TimedRobot {
   @Override
   public void testInit() {
     m_clock.reset();
-    //m_position.calibrateIMU();
+    m_drivetrain.resetEncoders();
+    m_orientation.calibrateIMU();
   }
 
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
-    //m_position.gyroPeriodic();
+    m_orientation.IMUPeriodic();
   }
 
   /** This function is called once when the robot is first started up. */
   @Override
   public void simulationInit() {
     m_clock.reset();
-    //m_position.calibrateIMU();
+    m_drivetrain.resetEncoders();
+    m_orientation.calibrateIMU();
   }
 
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {
-    //m_position.gyroPeriodic();
+    m_orientation.IMUPeriodic();
   }
 }

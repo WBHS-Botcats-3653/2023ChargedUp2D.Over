@@ -2,9 +2,11 @@ package frc.robot.subsystems;
 
 import static frc.robot.Constants.*;
 import frc.robot.Robot;
+
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Elevator {
@@ -12,7 +14,7 @@ public class Elevator {
 
     private OI m_input;
 
-    private Position m_position;
+    private Orientation m_position;
 
     private WPI_TalonSRX m_elevatorMaster;
     private WPI_VictorSPX  m_elevatorSlave;
@@ -22,7 +24,7 @@ public class Elevator {
 
     private Elevator() {
         m_input = OI.getInstance();
-        m_position = Position.getInstance();
+        m_position = Orientation.getInstance();
 
         m_elevatorMaster = new WPI_TalonSRX(kLeftElevatorID);   // ID of 19
         m_elevatorSlave = new WPI_VictorSPX(kRightElevatorID);  // ID of 18
