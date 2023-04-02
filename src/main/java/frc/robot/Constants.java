@@ -14,10 +14,10 @@ public class Constants {
     public static final int kFrontRightWheelID = 7;
     public static final int kRearRightWheelID = 8;
     // elevator
-    public static final int kLeftElevatorID = 19;
-    public static final int kRightElevatorID = 18;
+    public static final int kElevatorExtendWinchID = 19;
+    public static final int kElevatorRetractWinchID = 17;
     // grabber
-    public static final int kGrabberID = 17;
+    public static final int kGrabberID = 18;
 
     // encoder conversions
     /**
@@ -26,6 +26,17 @@ public class Constants {
      * which looks like (1.0 / 4096 * 6 * Math.PI / 12 = 0.0003834951969714103074295218973729) 
      */
     public static final double kDriveTicksToFeet = 0.00038349519697141030742952189737299;
+
+    // constants for the elevator P-Loops
+    public static final double kPullyRatio = 0.92169397923044600516237469235848;
+    public static final double kInversePullyRatio = 1.0849588068644371356931192809925;
+    public static final double kElevatorHighTargetPoint = 100279;
+    public static final double kElevatorMiddleTargetPoint = 0;
+    public static final double kElevatorLowTargetPoint = 0;
+    public static final double kElevatorDoubleTargetPoint = 0;
+    public static final double kElevatorSingleTargetPoint = 0;
+    public static final double kExtendingP = 0.000055;
+    public static final double kRetractingP = 0.000025;
 
     // artificial deadzone for the sticks
     public static  final double kArtificialStickDeadzone = 0.05;

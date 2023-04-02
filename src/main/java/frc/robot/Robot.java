@@ -5,13 +5,15 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
+//import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-//import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cameraserver.CameraServer;
 
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Orientation;
+import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Grabber;
+import frc.robot.subsystems.Heading;
 //import frc.robot.subsystems.Limelight;  
 
 /**
@@ -37,11 +39,16 @@ public class Robot extends TimedRobot {
   public static int kP2XboxPort;
 
   private Drivetrain m_drivetrain;
-  private Orientation m_orientation;
+  private Elevator m_elevator;
+  private Grabber m_grabber;
+  private Heading m_heading;
   //private Limelight m_limelight;
 
-  private Timer m_clock = new Timer();
   public static double time;
+
+  public static double grabStartTime;
+  public static boolean recordedGrabTime = false;
+  public static boolean doneMobilizing = false;
 
   
   /**
@@ -51,10 +58,12 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     m_drivetrain = Drivetrain.getInstance();
-    m_orientation = Orientation.getInstance();
+    m_elevator = Elevator.getInstance();
+    m_grabber = Grabber.getInstance();
+    m_heading = Heading.getInstance();
     //m_limelight = Limelight.getInstance();
     // calls a singleton to automatically detect the first connected camera to the roborio
-    //CameraServer.startAutomaticCapture();
+    CameraServer.startAutomaticCapture();
 
     m_autoChooser.setDefaultOption("Idle Auto", kIdleAuto);
     m_autoChooser.addOption("Park Auto", kParkAuto);
@@ -96,8 +105,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    time = m_clock.get();
-    m_orientation.IMUPeriodic(); 
+    time += 0.021;
+    m_heading.IMUPeriodic(); 
     //m_limelight.limelightPeriodic();
   }
 
@@ -113,14 +122,16 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_clock.reset();
+    time = 0;
 
     System.out.println("Auto selected: " + m_autoSelected);
     m_autoSelected = m_autoChooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     
     m_drivetrain.resetEncoders();
-    m_orientation.calibrateIMU();
+    m_elevator.resetEncoders();
+    m_drivetrain.setDriveToBrake();
+    m_heading.calibrateIMU();
   }
 
   /** This function is called periodically during autonomous. */
@@ -129,22 +140,64 @@ public class Robot extends TimedRobot {
     switch (m_autoSelected) {
       case kParkAuto:
         // Put park auto code here
+
         m_drivetrain.parkPeriodic();
+
+        m_grabber.checkForGamePiece();
+
+        if (!recordedGrabTime) {
+          grabStartTime = time;
+          recordedGrabTime = true;
+        }
+
+        m_grabber.dropGamePiece(0.5);
+
         break;
       case kMobilizeAuto:
         // Put mobilize auto code here
-        m_orientation.IMUPeriodic();
-        m_drivetrain.mobilizePeriodic();
+
+        //m_grabber.checkForGamePiece();
+
+        //if (!recordedGrabTime) {
+        //  grabStartTime = time;
+        //  recordedGrabTime = true;
+        //}
+
+        //m_grabber.dropGamePiece(0.5);
+
+        //if (m_grabber.getGrabberState().equals("idle")){
+        //  m_drivetrain.mobilizePeriodic();
+        //}
+
+        m_drivetrain.yippiePeriodic();
+
         break;
       case kChargeAuto:
         // Put charge station auto code here
-        m_orientation.IMUPeriodic();
-        m_drivetrain.chargePeriodic();
+        //m_drivetrain.chargePeriodic();
+        
+        //m_grabber.checkForGamePiece();
+
+        //if (!recordedGrabTime) {
+        //  grabStartTime = time;
+        //  recordedGrabTime = true;
+        //}
+
+        //m_grabber.dropGamePiece(0.5);
+        //
+        //if (m_grabber.getGrabberState().equals("idle")){
+        //  m_drivetrain.wereSoBackPeriodic();
+        //}
+
+        m_drivetrain.lolLmaoPeriodic();
+
         break;
       case kIdleAuto:
       default:
         // Put idle auto code here
+        
         m_drivetrain.parkPeriodic();
+
         break;
     }
   }
@@ -152,24 +205,33 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-    m_clock.reset();
+    time = 0;
     m_drivetrain.resetEncoders();
-    m_orientation.resetIMU();
+    m_elevator.resetEncoders();
+    m_drivetrain.setDriveToBrake();
+    m_heading.resetIMU();
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
     m_drivetrain.drivePeriodic();
+    //m_elevator.manualElevatorPeriodic();
+    //m_grabber.manualGrabPeriodic();
+
+    
+    //m_elevator.elevatorPeriodic();
   }
 
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
-    m_clock.stop();
+    time = 0;
     m_drivetrain.parkPeriodic();
     m_drivetrain.resetEncoders();
-    m_orientation.calibrateIMU();
+    m_elevator.resetEncoders();
+    m_drivetrain.setDriveToCoast();
+    m_heading.calibrateIMU();
   }
 
   /** This function is called periodically when disabled. */
@@ -179,28 +241,32 @@ public class Robot extends TimedRobot {
   /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {
-    m_clock.reset();
+    time = 0;
     m_drivetrain.resetEncoders();
-    m_orientation.calibrateIMU();
+    m_elevator.resetEncoders();
+    m_drivetrain.setDriveToBrake();
+    m_heading.calibrateIMU();
   }
 
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
-    m_orientation.IMUPeriodic();
+    m_heading.IMUPeriodic();
   }
 
   /** This function is called once when the robot is first started up. */
   @Override
   public void simulationInit() {
-    m_clock.reset();
+    time = 0;
     m_drivetrain.resetEncoders();
-    m_orientation.calibrateIMU();
+    m_elevator.resetEncoders();
+    m_drivetrain.setDriveToBrake();
+    m_heading.calibrateIMU();
   }
 
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {
-    m_orientation.IMUPeriodic();
+    m_heading.IMUPeriodic();
   }
 }

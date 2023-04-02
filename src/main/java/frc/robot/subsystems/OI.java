@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import frc.robot.Robot;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 // Operator Inputs
 public class OI {
@@ -35,6 +36,10 @@ public class OI {
         return Math.round(m_p1Controller.getLeftY() * 10000.0 + 5) / 10000.0;
     }
 
+    public boolean isP1LeftStickDown() {
+        return m_p1Controller.getLeftStickButtonPressed();
+    }
+
     public double getP1RightX() {
         // rounds the returned double to 4 decimal places for smoother movement
         return Math.round(m_p1Controller.getRightX() * 10000.0 + 5) / 10000.0;
@@ -42,6 +47,10 @@ public class OI {
 
     public double getP1RightY() {
         return m_p1Controller.getRightY();
+    }
+
+    public boolean isP1RightStickDown() {
+        return m_p1Controller.getRightStickButtonPressed();
     }
     
     public double getP1LeftTriggerAxis() {
@@ -52,37 +61,50 @@ public class OI {
         return m_p1Controller.getRightTriggerAxis();
     }
 
-    public boolean getP1LeftTriggerDown() {
-        return m_p1Controller.getLeftTriggerAxis() > 0.05;
+    public boolean isP1LeftTriggerDown() {
+        return m_p1Controller.getLeftTriggerAxis() > 0.1;
     }
 
-    public boolean getP1RightTriggerDown() {
-        return m_p1Controller.getRightTriggerAxis() > 0.05;
+    public boolean isP1RightTriggerDown() {
+        return m_p1Controller.getRightTriggerAxis() > 0.1;
     }
 
-    public boolean getP1LeftBumperDown() {
+    public boolean isP1LeftBumperDown() {
         return m_p1Controller.getLeftBumper();
     }
 
-    public boolean getP1RightBumperDown() {
+    public boolean isP1RightBumperDown() {
         return m_p1Controller.getRightBumper();
     }
 
-    public boolean getP1ADown() {
+    public boolean isP1ADown() {
         return m_p1Controller.getAButton();
     }
 
-    public boolean getP1BDown() {
+    public boolean isP1BDown() {
         return m_p1Controller.getBButton();
     }
 
-    public boolean getP1XDown() {
+    public boolean isP1XDown() {
         return m_p1Controller.getXButton();
     }
 
-    public boolean getP1YDown() {
+    public boolean isP1YDown() {
         return m_p1Controller.getYButton();
     }
+
+    //public double isP1DPadLeft() {
+    //    int angle  = m_p1Controller.getPOV();
+    //
+    //    if (angle == -1) {
+    //        return 0.0;
+    //    }
+    //  
+    //    SmartDashboard.putNumber("D-Pad Input", Math.round(Math.cos(Math.toRadians(angle)) * 100.0) / 100.0);
+    //    
+    //    // Convert angle to a value of either -1 or 1
+    //    return Math.round(Math.cos(Math.toRadians(angle)) * 100.0) / 100.0;
+    //}
 
     /** 
      * player two's inputs
@@ -97,6 +119,10 @@ public class OI {
         return Math.round(m_p2Controller.getLeftY() * 10000.0 + 5) / 10000.0;
     }
 
+    public boolean isP2LeftStickDown() {
+        return m_p2Controller.getLeftStickButtonPressed();
+    }
+
     public double getP2RightX() {
         // rounds the returned double to 4 decimal places for smoother movement
         return Math.round(m_p2Controller.getRightX() * 10000.0 + 5) / 10000.0;
@@ -104,6 +130,10 @@ public class OI {
 
     public double getP2RightY() {
         return m_p2Controller.getRightY();
+    }
+
+    public boolean isP2RightStickDown() {
+        return m_p2Controller.getRightStickButtonPressed();
     }
     
     public double getP2LeftTriggerAxis() {
@@ -114,35 +144,35 @@ public class OI {
         return m_p2Controller.getRightTriggerAxis();
     }
 
-    public boolean getP2LeftTriggerDown() {
-        return m_p1Controller.getLeftTriggerAxis() > 0.05;
+    public boolean isP2LeftTriggerDown() {
+        return m_p1Controller.getLeftTriggerAxis() > 0.1;
     }
 
-    public boolean getP2RightTriggerDown() {
-        return m_p1Controller.getRightTriggerAxis() > 0.05;
+    public boolean isP2RightTriggerDown() {
+        return m_p1Controller.getRightTriggerAxis() > 0.1;
     }
 
-    public boolean getP2LeftBumperDown() {
+    public boolean isP2LeftBumperDown() {
         return m_p2Controller.getLeftBumper();
     }
 
-    public boolean getP2RightBumperDown() {
+    public boolean isP2RightBumperDown() {
         return m_p2Controller.getRightBumper();
     }
 
-    public boolean getP2ADown() {
+    public boolean isP2ADown() {
         return m_p1Controller.getAButton();
     }
 
-    public boolean getP2BDown() {
+    public boolean isP2BDown() {
         return m_p1Controller.getBButton();
     }
 
-    public boolean getP2XDown() {
+    public boolean isP2XDown() {
         return m_p1Controller.getXButton();
     }
 
-    public boolean getP2YDown() {
+    public boolean isP2YDown() {
         return m_p1Controller.getYButton();
     }
 }

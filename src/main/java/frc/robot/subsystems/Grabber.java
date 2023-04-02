@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import static frc.robot.Constants.*;
 import frc.robot.Robot;
+import frc.robot.subsystems.Elevator;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -13,24 +14,24 @@ public class Grabber {
 
     private OI m_input;
 
-    private Orientation m_position;
-
     private WPI_TalonSRX m_grabber;
 
-    private boolean hasInput = false;
+    private String grabberState = "idle";
+
+    private boolean hasDropInput = false;
+    private boolean hasGrabInput = false;
     private boolean hasGamepiece = true;
 
     private Grabber() {
         m_input = OI.getInstance();
-        m_position = Orientation.getInstance();
 
-        m_grabber = new WPI_TalonSRX(kGrabberID);  // ID of 17
+        m_grabber = new WPI_TalonSRX(kGrabberID);  // ID of 18
 
         // sets the motor to break mode
         m_grabber.setNeutralMode(NeutralMode.Brake);
 
-        // makes sure motor is not inverted 
-        m_grabber.setInverted(false);
+        // makes sure motor is inverted 
+        m_grabber.setInverted(true);
     }
 
     // returns an instance of Grabber, creating an instance only when one does not already exist
@@ -41,33 +42,85 @@ public class Grabber {
         return m_singleton;
     }
 
-    public void grabPeriodic() {
-        if (m_input.getP2LeftBumperDown()) {
-            hasInput = true;
-            m_grabber.set(0.6);
-        } else if (m_input.getP2RightBumperDown()) {
-            hasInput = true;
-            m_grabber.set(-0.2);
+    public void checkForGamePiece() {
+        if (this.hasInput() && 1 < Robot.time - Robot.grabStartTime){
+            hasGamepiece = false;
+        } else if (hasGrabInput && m_grabber.getStatorCurrent() > 14) {
+            hasGamepiece = true;
+        }
+    }
+
+    public void dropGamePiece(double ejectSpeed) {
+        if (hasGamepiece) {
+            hasDropInput = true;
+            grabberState = "dropping game piece";
+            m_grabber.set(-ejectSpeed);
         } else {
-            hasInput = false;
+            grabberState = "idle";
+            m_grabber.set(0);
+        }
+    }
+
+    //public void grabPeriodic() {
+    //    if (hasGamepiece) {
+    //        hasDropInput = true;
+    //        m_grabber.set(-0.30);
+    //    } else {
+    //        m_grabber.set(0);
+    //    }
+    //}
+
+    public void manualGrabPeriodic() {
+        if (this.hasInput() && m_grabber.getStatorCurrent() <= 2.5) {
+            hasGamepiece = false;
+        } else if (hasGrabInput && m_grabber.getStatorCurrent() > 14) {
+            hasGamepiece = true;
+        }
+
+        //if (this.hasInput() && (1 < Robot.time - Elevator.grabStartTime)){
+        //    hasGamepiece = false;
+        //} else  if (hasGrabInput && m_grabber.getStatorCurrent() > 14) {
+        //    hasGamepiece = true;
+        //}
+
+        if (m_input.isP1LeftBumperDown()) {
+            hasDropInput = true;
+            
+            grabberState = "dropping game piece";
+            m_grabber.set(-0.50);
+        } else if (m_input.isP1RightBumperDown()) {
+            hasGrabInput = true;
+
+            grabberState = "grabbing game piece";
+            m_grabber.set(1);
+        } else {
+            hasDropInput = false;
+            hasGrabInput = false;
+
+            grabberState = "idle";
             m_grabber.set(0);
         }
 
-        if (!hasInput && m_grabber.getSupplyCurrent() > 10) {
-            hasGamepiece = true;
-        } else if (!hasInput && m_grabber.getSupplyCurrent() <= 10) {
-            hasGamepiece = false;
-        }
-
-        if (hasGamepiece && !hasInput) m_grabber.set(0.1);
-
-        SmartDashboard.putNumber("Grabber Supply Current", m_grabber.getSupplyCurrent());
+        SmartDashboard.putBoolean("Has Grab Input", hasGrabInput);
+        SmartDashboard.putBoolean("Has Drop Input", hasDropInput);
+        SmartDashboard.putBoolean("Holding Piece", hasGamepiece);
         SmartDashboard.putNumber("Grabber Stator Current", m_grabber.getStatorCurrent());
-
     }
 
-    public boolean grabberHasInput() {
-        return hasInput;
+    public String getGrabberState() {
+        return grabberState;
+    }
+
+    public boolean hasGrabInput() {
+        return hasGrabInput;
+    }
+
+    public boolean hasDropInput() {
+        return hasDropInput;
+    }
+
+    public boolean hasInput() {
+        return hasDropInput || hasGrabInput;
     }
 
     public boolean holdingGamepiece() {
