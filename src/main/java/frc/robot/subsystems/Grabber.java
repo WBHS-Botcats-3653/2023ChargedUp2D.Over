@@ -16,11 +16,17 @@ public class Grabber {
 
     private WPI_TalonSRX m_grabber;
 
-    private String grabberState = "idle";
-
     private boolean hasDropInput = false;
     private boolean hasGrabInput = false;
     private boolean hasGamepiece = true;
+        
+    private static enum State {
+        IDLE,
+        DROPPING,
+        GRABBING
+    }
+
+    public State grabberState = State.IDLE;
 
     private Grabber() {
         m_input = OI.getInstance();
@@ -48,66 +54,72 @@ public class Grabber {
         } else if (hasGrabInput && m_grabber.getStatorCurrent() > 14) {
             hasGamepiece = true;
         }
+
+        this.updateSmartDashboard();
+    }
+
+    public void grabGamePiece(double ingestSpeed) {
+        if (!hasGamepiece) {
+            hasGrabInput = true;
+            grabberState = State.GRABBING;
+            m_grabber.set(ingestSpeed);
+        } else {
+            grabberState = State.IDLE;
+            m_grabber.set(0);
+        }
+
+        this.updateSmartDashboard();
     }
 
     public void dropGamePiece(double ejectSpeed) {
         if (hasGamepiece) {
             hasDropInput = true;
-            grabberState = "dropping game piece";
+            grabberState = State.DROPPING;
             m_grabber.set(-ejectSpeed);
         } else {
-            grabberState = "idle";
+            grabberState = State.IDLE;
             m_grabber.set(0);
         }
+
+        this.updateSmartDashboard();
     }
 
-    //public void grabPeriodic() {
-    //    if (hasGamepiece) {
-    //        hasDropInput = true;
-    //        m_grabber.set(-0.30);
-    //    } else {
-    //        m_grabber.set(0);
-    //    }
-    //}
-
-    public void manualGrabPeriodic() {
+    public void operateGrabPeriodic() {
         if (this.hasInput() && m_grabber.getStatorCurrent() <= 2.5) {
             hasGamepiece = false;
         } else if (hasGrabInput && m_grabber.getStatorCurrent() > 14) {
             hasGamepiece = true;
         }
 
-        //if (this.hasInput() && (1 < Robot.time - Elevator.grabStartTime)){
-        //    hasGamepiece = false;
-        //} else  if (hasGrabInput && m_grabber.getStatorCurrent() > 14) {
-        //    hasGamepiece = true;
-        //}
-
         if (m_input.isP1LeftBumperDown()) {
             hasDropInput = true;
             
-            grabberState = "dropping game piece";
+            grabberState = State.DROPPING;
             m_grabber.set(-0.50);
         } else if (m_input.isP1RightBumperDown()) {
             hasGrabInput = true;
 
-            grabberState = "grabbing game piece";
+            grabberState = State.GRABBING;
             m_grabber.set(1);
         } else {
             hasDropInput = false;
             hasGrabInput = false;
 
-            grabberState = "idle";
+            grabberState = State.IDLE;
             m_grabber.set(0);
         }
 
+        this.updateSmartDashboard();
+    }
+
+    public void updateSmartDashboard() {
         SmartDashboard.putBoolean("Has Grab Input", hasGrabInput);
         SmartDashboard.putBoolean("Has Drop Input", hasDropInput);
         SmartDashboard.putBoolean("Holding Piece", hasGamepiece);
         SmartDashboard.putNumber("Grabber Stator Current", m_grabber.getStatorCurrent());
     }
 
-    public String getGrabberState() {
+    public State getState() {
         return grabberState;
     }
 

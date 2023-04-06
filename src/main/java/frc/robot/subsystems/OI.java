@@ -93,18 +93,18 @@ public class OI {
         return m_p1Controller.getYButton();
     }
 
-    //public double isP1DPadLeft() {
-    //    int angle  = m_p1Controller.getPOV();
-    //
-    //    if (angle == -1) {
-    //        return 0.0;
-    //    }
-    //  
-    //    SmartDashboard.putNumber("D-Pad Input", Math.round(Math.cos(Math.toRadians(angle)) * 100.0) / 100.0);
-    //    
-    //    // Convert angle to a value of either -1 or 1
-    //    return Math.round(Math.cos(Math.toRadians(angle)) * 100.0) / 100.0;
-    //}
+    public double isP1DPadLeft() {
+        int angle  = m_p1Controller.getPOV();
+    
+        if (angle == -1) {
+            return 0.0;
+        }
+      
+        SmartDashboard.putNumber("D-Pad Input", Math.round(Math.cos(Math.toRadians(angle)) * 100.0) / 100.0);
+        
+        // Convert angle to a value of either -1 or 1
+        return Math.round(Math.cos(Math.toRadians(angle)) * 100.0) / 100.0;
+    }
 
     /** 
      * player two's inputs

@@ -51,14 +51,14 @@ public class Drivetrain {
         m_rightSlave.setNeutralMode(NeutralMode.Brake);
 
         // sets the motors maximum current limit to 40 amps and enforce it when its exceded for 20 milliseconds
-        m_leftMaster.configPeakCurrentLimit(40, 0);
+        m_leftMaster.configPeakCurrentLimit(45, 0);
         m_leftMaster.configPeakCurrentDuration(20, 0);
-        m_leftMaster.configContinuousCurrentLimit(35);
+        m_leftMaster.configContinuousCurrentLimit(40);
         m_leftMaster.enableCurrentLimit(true);
 
-        m_rightMaster.configPeakCurrentLimit(40, 0);
+        m_rightMaster.configPeakCurrentLimit(45, 0);
         m_rightMaster.configPeakCurrentDuration(20, 0);
-        m_rightMaster.configContinuousCurrentLimit(35);
+        m_rightMaster.configContinuousCurrentLimit(40);
         m_rightMaster.enableCurrentLimit(true);
 
         // inverts the right side 
@@ -113,16 +113,7 @@ public class Drivetrain {
             m_robotDrive.arcadeDrive(-m_input.getP1LeftY(), -m_input.getP1RightX() * kRotationDampenerCoefficient);
         }
 
-        // outputs encoders data
-        SmartDashboard.putNumber("Left Drive Encoder Ticks", m_leftMaster.getSelectedSensorPosition());
-        SmartDashboard.putNumber("Right Drive Encoder Ticks", m_rightMaster.getSelectedSensorPosition());
-        SmartDashboard.putNumber("Left Drive Travel Distance", m_leftMaster.getSelectedSensorPosition() * kDriveTicksToFeet);
-        SmartDashboard.putNumber("Right Drive Travel Distance", m_rightMaster.getSelectedSensorPosition() * kDriveTicksToFeet);
-        SmartDashboard.putNumber("Robot Feet Traveled", feetTraveled);
-
-        // outputs motor currents
-        SmartDashboard.putNumber("Left Drive Stator Current", m_leftMaster.getStatorCurrent());
-        SmartDashboard.putNumber("Right Drive Stator Current", m_rightMaster.getStatorCurrent());
+        this.updateSmartDashboard();
     } 
 
     public void parkPeriodic() {
@@ -140,12 +131,7 @@ public class Drivetrain {
             doneMobilizing = true;
         }
 
-        // outputs encoders data
-        SmartDashboard.putNumber("Left Drive Encoder Ticks", m_leftMaster.getSelectedSensorPosition());
-        SmartDashboard.putNumber("Right Drive Encoder Ticks", m_rightMaster.getSelectedSensorPosition());
-        SmartDashboard.putNumber("Left Drive Travel Distance", m_leftMaster.getSelectedSensorPosition() * kDriveTicksToFeet);
-        SmartDashboard.putNumber("Right Drive Travel Distance", m_rightMaster.getSelectedSensorPosition() * kDriveTicksToFeet);
-        SmartDashboard.putNumber("Robot Feet Traveled", feetTraveled);
+        this.updateSmartDashboard();
     }
 
     // auto that engages with charge station
@@ -159,12 +145,7 @@ public class Drivetrain {
             doneCharging = true;
         }
 
-        // outputs encoders data
-        SmartDashboard.putNumber("Left Drive Encoder Ticks", m_leftMaster.getSelectedSensorPosition());
-        SmartDashboard.putNumber("Right Drive Encoder Ticks", m_rightMaster.getSelectedSensorPosition());
-        SmartDashboard.putNumber("Left Drive Travel Distance", m_leftMaster.getSelectedSensorPosition() * kDriveTicksToFeet);
-        SmartDashboard.putNumber("Right Drive Travel Distance", m_rightMaster.getSelectedSensorPosition() * kDriveTicksToFeet);
-        SmartDashboard.putNumber("Robot Feet Traveled", feetTraveled);
+        this.updateSmartDashboard();
     }
 
     // auto that scores a game piece in hybrid and mobilizes 
@@ -183,12 +164,7 @@ public class Drivetrain {
             doneMobilizing = true;
         }
 
-        // outputs encoders data
-        SmartDashboard.putNumber("Left Drive Encoder Ticks", m_leftMaster.getSelectedSensorPosition());
-        SmartDashboard.putNumber("Right Drive Encoder Ticks", m_rightMaster.getSelectedSensorPosition());
-        SmartDashboard.putNumber("Left Drive Travel Distance", m_leftMaster.getSelectedSensorPosition() * kDriveTicksToFeet);
-        SmartDashboard.putNumber("Right Drive Travel Distance", m_rightMaster.getSelectedSensorPosition() * kDriveTicksToFeet);
-        SmartDashboard.putNumber("Robot Feet Traveled", feetTraveled);
+        this.updateSmartDashboard();
     }
 
     // auto that scores a game piece in hybrid, mobilizes, and engages with charge station
@@ -211,12 +187,7 @@ public class Drivetrain {
             doneCharging = true;
         }
 
-        // outputs encoders data
-        SmartDashboard.putNumber("Left Drive Encoder Ticks", m_leftMaster.getSelectedSensorPosition());
-        SmartDashboard.putNumber("Right Drive Encoder Ticks", m_rightMaster.getSelectedSensorPosition());
-        SmartDashboard.putNumber("Left Drive Travel Distance", m_leftMaster.getSelectedSensorPosition() * kDriveTicksToFeet);
-        SmartDashboard.putNumber("Right Drive Travel Distance", m_rightMaster.getSelectedSensorPosition() * kDriveTicksToFeet);
-        SmartDashboard.putNumber("Robot Feet Traveled", feetTraveled);
+        this.updateSmartDashboard();
     }
 
     public void wereSoBackPeriodic() {
@@ -233,12 +204,7 @@ public class Drivetrain {
             doneCharging = true;
         }
 
-        // outputs encoders data
-        SmartDashboard.putNumber("Left Drive Encoder Ticks", m_leftMaster.getSelectedSensorPosition());
-        SmartDashboard.putNumber("Right Drive Encoder Ticks", m_rightMaster.getSelectedSensorPosition());
-        SmartDashboard.putNumber("Left Drive Travel Distance", m_leftMaster.getSelectedSensorPosition() * kDriveTicksToFeet);
-        SmartDashboard.putNumber("Right Drive Travel Distance", m_rightMaster.getSelectedSensorPosition() * kDriveTicksToFeet);
-        SmartDashboard.putNumber("Robot Feet Traveled", feetTraveled);
+        this.updateSmartDashboard();
     }
     
     public void resetEncoders() {
@@ -259,5 +225,18 @@ public class Drivetrain {
         m_leftSlave.setNeutralMode(NeutralMode.Coast);
         m_rightMaster.setNeutralMode(NeutralMode.Coast);
         m_rightSlave.setNeutralMode(NeutralMode.Coast);
+    }
+
+    public void updateSmartDashboard() {
+        // outputs encoders data
+        SmartDashboard.putNumber("Left Drive Encoder Ticks", m_leftMaster.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Right Drive Encoder Ticks", m_rightMaster.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Left Drive Travel Distance", m_leftMaster.getSelectedSensorPosition() * kDriveTicksToFeet);
+        SmartDashboard.putNumber("Right Drive Travel Distance", m_rightMaster.getSelectedSensorPosition() * kDriveTicksToFeet);
+        SmartDashboard.putNumber("Robot Feet Traveled", feetTraveled);
+
+        // outputs motor currents
+        SmartDashboard.putNumber("Left Drive Stator Current", m_leftMaster.getStatorCurrent());
+        SmartDashboard.putNumber("Right Drive Stator Current", m_rightMaster.getStatorCurrent());
     }
 }

@@ -5,15 +5,16 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-//import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.cameraserver.CameraServer;
 
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Elevator.*;
 import frc.robot.subsystems.Grabber;
 import frc.robot.subsystems.Heading;
+import frc.robot.subsystems.OI;
 //import frc.robot.subsystems.Limelight;  
 
 /**
@@ -42,6 +43,7 @@ public class Robot extends TimedRobot {
   private Elevator m_elevator;
   private Grabber m_grabber;
   private Heading m_heading;
+  private OI m_input;
   //private Limelight m_limelight;
 
   public static double time;
@@ -61,6 +63,7 @@ public class Robot extends TimedRobot {
     m_elevator = Elevator.getInstance();
     m_grabber = Grabber.getInstance();
     m_heading = Heading.getInstance();
+    m_input = OI.getInstance();
     //m_limelight = Limelight.getInstance();
     // calls a singleton to automatically detect the first connected camera to the roborio
     CameraServer.startAutomaticCapture();
@@ -129,7 +132,7 @@ public class Robot extends TimedRobot {
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     
     m_drivetrain.resetEncoders();
-    m_elevator.resetEncoders();
+    m_elevator.resetEncoder();
     m_drivetrain.setDriveToBrake();
     m_heading.calibrateIMU();
   }
@@ -169,7 +172,7 @@ public class Robot extends TimedRobot {
         //  m_drivetrain.mobilizePeriodic();
         //}
 
-        m_drivetrain.yippiePeriodic();
+        m_drivetrain.yippiePeriodic(); 
 
         break;
       case kChargeAuto:
@@ -207,7 +210,7 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     time = 0;
     m_drivetrain.resetEncoders();
-    m_elevator.resetEncoders();
+    m_elevator.resetEncoder();
     m_drivetrain.setDriveToBrake();
     m_heading.resetIMU();
   }
@@ -216,11 +219,8 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     m_drivetrain.drivePeriodic();
-    //m_elevator.manualElevatorPeriodic();
-    //m_grabber.manualGrabPeriodic();
-
-    
-    //m_elevator.elevatorPeriodic();
+    m_elevator.operateElevatorPeriodic();
+    //m_grabber.operateGrabPeriodic();
   }
 
   /** This function is called once when the robot is disabled. */
@@ -229,7 +229,7 @@ public class Robot extends TimedRobot {
     time = 0;
     m_drivetrain.parkPeriodic();
     m_drivetrain.resetEncoders();
-    m_elevator.resetEncoders();
+    m_elevator.resetEncoder();
     m_drivetrain.setDriveToCoast();
     m_heading.calibrateIMU();
   }
@@ -243,7 +243,7 @@ public class Robot extends TimedRobot {
   public void testInit() {
     time = 0;
     m_drivetrain.resetEncoders();
-    m_elevator.resetEncoders();
+    m_elevator.resetEncoder();
     m_drivetrain.setDriveToBrake();
     m_heading.calibrateIMU();
   }
@@ -259,7 +259,7 @@ public class Robot extends TimedRobot {
   public void simulationInit() {
     time = 0;
     m_drivetrain.resetEncoders();
-    m_elevator.resetEncoders();
+    m_elevator.resetEncoder();
     m_drivetrain.setDriveToBrake();
     m_heading.calibrateIMU();
   }
@@ -268,5 +268,20 @@ public class Robot extends TimedRobot {
   @Override
   public void simulationPeriodic() {
     m_heading.IMUPeriodic();
+  }
+
+  //** This function is called to organize the smart controls of the elevator and grabber. */
+  public void scoringControl() {
+    Target theTarget;
+
+    if (m_input.isP2YDown()) {
+      theTarget = Target.HIGH;
+    } else if (m_input.isP2BDown()) {
+      theTarget = Target.MID;
+    } else if (m_input.isP2ADown()) {
+      theTarget = Target.LOW;
+    } else {
+      theTarget = Target.NONE;
+    }
   }
 }
