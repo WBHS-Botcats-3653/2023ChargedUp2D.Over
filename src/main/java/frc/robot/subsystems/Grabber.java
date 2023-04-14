@@ -20,20 +20,20 @@ public class Grabber {
     private boolean hasGrabInput = false;
     private boolean hasGamepiece = true;
         
-    private static enum State {
-        IDLE,
+    public static enum Action {
+        NONE,
         DROPPING,
         GRABBING
     }
 
-    public State grabberState = State.IDLE;
+    public Action grabberAction = Action.NONE;
 
     private Grabber() {
         m_input = OI.getInstance();
 
         m_grabber = new WPI_TalonSRX(kGrabberID);  // ID of 18
 
-        // sets the motor to break mode
+        // sets the motor to break Action
         m_grabber.setNeutralMode(NeutralMode.Brake);
 
         // makes sure motor is inverted 
@@ -48,11 +48,19 @@ public class Grabber {
         return m_singleton;
     }
 
-    public void checkForGamePiece() {
-        if (this.hasInput() && 1 < Robot.time - Robot.grabStartTime){
-            hasGamepiece = false;
-        } else if (hasGrabInput && m_grabber.getStatorCurrent() > 14) {
-            hasGamepiece = true;
+    public void checkForGamePiece(boolean isDropping) {
+        if (isDropping) {
+            if (this.hasInput() && 1 < Robot.time - Robot.grabberStartTime){
+                hasGamepiece = false;
+            } else if (hasGrabInput && m_grabber.getStatorCurrent() > 30) {
+                hasGamepiece = true;
+            }
+        } else {
+            if (this.hasInput() && 3 < Robot.time - Robot.grabberStartTime){
+                hasGamepiece = false;
+            } else if (hasGrabInput && m_grabber.getStatorCurrent() > 30) {
+                hasGamepiece = true;
+            }
         }
 
         this.updateSmartDashboard();
@@ -61,10 +69,10 @@ public class Grabber {
     public void grabGamePiece(double ingestSpeed) {
         if (!hasGamepiece) {
             hasGrabInput = true;
-            grabberState = State.GRABBING;
+            grabberAction = Action.GRABBING;
             m_grabber.set(ingestSpeed);
         } else {
-            grabberState = State.IDLE;
+            grabberAction = Action.NONE;
             m_grabber.set(0);
         }
 
@@ -74,10 +82,10 @@ public class Grabber {
     public void dropGamePiece(double ejectSpeed) {
         if (hasGamepiece) {
             hasDropInput = true;
-            grabberState = State.DROPPING;
+            grabberAction = Action.DROPPING;
             m_grabber.set(-ejectSpeed);
         } else {
-            grabberState = State.IDLE;
+            grabberAction = Action.NONE;
             m_grabber.set(0);
         }
 
@@ -87,25 +95,25 @@ public class Grabber {
     public void operateGrabPeriodic() {
         if (this.hasInput() && m_grabber.getStatorCurrent() <= 2.5) {
             hasGamepiece = false;
-        } else if (hasGrabInput && m_grabber.getStatorCurrent() > 14) {
+        } else if (hasGrabInput && m_grabber.getStatorCurrent() > 30) {
             hasGamepiece = true;
         }
 
-        if (m_input.isP1LeftBumperDown()) {
+        if (m_input.isP1DPadLeft()) {
             hasDropInput = true;
             
-            grabberState = State.DROPPING;
-            m_grabber.set(-0.50);
-        } else if (m_input.isP1RightBumperDown()) {
+            grabberAction = Action.DROPPING;
+            m_grabber.set(-0.5);
+        } else if (m_input.isP1DPadRight()) {
             hasGrabInput = true;
 
-            grabberState = State.GRABBING;
+            grabberAction = Action.GRABBING;
             m_grabber.set(1);
         } else {
             hasDropInput = false;
             hasGrabInput = false;
 
-            grabberState = State.IDLE;
+            grabberAction = Action.NONE;
             m_grabber.set(0);
         }
 
@@ -119,8 +127,8 @@ public class Grabber {
         SmartDashboard.putNumber("Grabber Stator Current", m_grabber.getStatorCurrent());
     }
 
-    public State getState() {
-        return grabberState;
+    public Action getAction() {
+        return grabberAction;
     }
 
     public boolean hasGrabInput() {

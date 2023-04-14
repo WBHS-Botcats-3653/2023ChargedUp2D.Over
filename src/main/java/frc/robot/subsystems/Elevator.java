@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import static frc.robot.Constants.*;
+import frc.robot.Robot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -79,7 +80,7 @@ public class Elevator {
         m_elevatorWinchMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
     
         // reverses the positive counting direction for the winch
-        m_elevatorWinchMaster.setSensorPhase(false);
+        m_elevatorWinchMaster.setSensorPhase(true);
 
         // resets encoders to zero
         m_elevatorWinchMaster.setSelectedSensorPosition(0, 0, 10);
@@ -107,6 +108,7 @@ public class Elevator {
                     m_elevatorWinchMaster.set(output);
                 } else if (m_elevatorWinchMaster.getSelectedSensorPosition() >= kHighTargetPoint) {
                     elevatorState = State.EXTENDED;
+                    elevatorTarget = Target.NONE;
                 
                     m_elevatorWinchMaster.set(0);
                 }
@@ -123,6 +125,7 @@ public class Elevator {
                     m_elevatorWinchMaster.set(output);
                 } else if (m_elevatorWinchMaster.getSelectedSensorPosition() >= kMidTargetPoint) {
                     elevatorState = State.EXTENDED;
+                    elevatorTarget = Target.NONE;
                 
                     m_elevatorWinchMaster
                     .set(0);
@@ -140,7 +143,8 @@ public class Elevator {
                     m_elevatorWinchMaster.set(output);
                 } else if (m_elevatorWinchMaster.getSelectedSensorPosition() >= kLowTargetPoint) {
                     elevatorState = State.EXTENDED;
-                
+                    elevatorTarget = Target.NONE;
+
                     m_elevatorWinchMaster.set(0);
                 }
 
@@ -156,6 +160,7 @@ public class Elevator {
                     m_elevatorWinchMaster.set(output);
                 } else if (m_elevatorWinchMaster.getSelectedSensorPosition() >= kDoubleTargetPoint) {
                     elevatorState = State.EXTENDED;
+                    elevatorTarget = Target.NONE;
                 
                     m_elevatorWinchMaster.set(0);
                 }
@@ -163,7 +168,7 @@ public class Elevator {
                 break;
             case SINGLE:
 
-                if ((m_elevatorWinchMaster.getSelectedSensorPosition() < kSingleTargetPoint) && !hasInput) {
+               if ((m_elevatorWinchMaster.getSelectedSensorPosition() < kSingleTargetPoint) && !hasInput) {
                     output = (kSingleTargetPoint - m_elevatorWinchMaster.getSelectedSensorPosition()) * kElevatorP;
                 
                     elevatorState = State.EXTENDING;
@@ -172,6 +177,7 @@ public class Elevator {
                     m_elevatorWinchMaster.set(output);
                 } else if (m_elevatorWinchMaster.getSelectedSensorPosition() >= kSingleTargetPoint) {
                     elevatorState = State.EXTENDED;
+                    elevatorTarget = Target.NONE;
                 
                     m_elevatorWinchMaster.set(0);
                 }
@@ -179,7 +185,7 @@ public class Elevator {
                 break;
             case NONE:
             default:
-
+                elevatorTarget = Target.NONE;
                 break;
         }
 
@@ -207,18 +213,17 @@ public class Elevator {
         //if (m_input.isP1LeftTriggerDown() && m_elevatorWinchMaster.getSelectedSensorPosition() > kMinExtensionPoint) {
         if (m_input.isP1LeftTriggerDown()) {
             m_elevatorWinchMaster.set(-m_input.getP1LeftTriggerAxis());
-            //m_elevatorWinchSlave.set(-m_input.getP1LeftTriggerAxis());
+            Robot.userTarget = Target.NONE;
 
             hasInput = true;
-        //} else if (m_input.isP1RightTriggerDown() && m_elevatorWinchMaster.getSelectedSensorPosition() < kMaxExtensionPoint) {
-        } else if (m_input.isP1RightTriggerDown()) {
+        } else if (m_input.isP1RightTriggerDown() && m_elevatorWinchMaster.getSelectedSensorPosition() < kMaxExtensionPoint) {
+        //} else if (m_input.isP1RightTriggerDown()) {
             m_elevatorWinchMaster.set(m_input.getP1RightTriggerAxis());
-            //m_elevatorWinchSlave.set(m_input.getP1RightTriggerAxis());
 
+            Robot.userTarget = Target.NONE;
             hasInput = true;
-        } else {
+        } else if (elevatorTarget == Target.NONE) {
             m_elevatorWinchMaster.set(0);
-            //m_elevatorWinchSlave.set(0);
 
             hasInput = false;
         }

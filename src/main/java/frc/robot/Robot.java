@@ -13,6 +13,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Elevator.*;
 import frc.robot.subsystems.Grabber;
+import frc.robot.subsystems.Grabber.*;
 import frc.robot.subsystems.Heading;
 import frc.robot.subsystems.OI;
 //import frc.robot.subsystems.Limelight;  
@@ -48,9 +49,10 @@ public class Robot extends TimedRobot {
 
   public static double time;
 
-  public static double grabStartTime;
-  public static boolean recordedGrabTime = false;
+  public static double grabberStartTime;
+  public static boolean recordedGrabberTime = false;
   public static boolean doneMobilizing = false;
+  public static Target userTarget = Target.NONE;
 
   
   /**
@@ -146,11 +148,11 @@ public class Robot extends TimedRobot {
 
         m_drivetrain.parkPeriodic();
 
-        m_grabber.checkForGamePiece();
+        m_grabber.checkForGamePiece(true);
 
-        if (!recordedGrabTime) {
-          grabStartTime = time;
-          recordedGrabTime = true;
+        if (!recordedGrabberTime) {
+          grabberStartTime = time;
+          recordedGrabberTime = true;
         }
 
         m_grabber.dropGamePiece(0.5);
@@ -161,9 +163,9 @@ public class Robot extends TimedRobot {
 
         //m_grabber.checkForGamePiece();
 
-        //if (!recordedGrabTime) {
-        //  grabStartTime = time;
-        //  recordedGrabTime = true;
+        //if (!recordedGrabberTime) {
+        //  grabberStartTime = time;
+        //  recordedGrabberTime = true;
         //}
 
         //m_grabber.dropGamePiece(0.5);
@@ -181,9 +183,9 @@ public class Robot extends TimedRobot {
         
         //m_grabber.checkForGamePiece();
 
-        //if (!recordedGrabTime) {
-        //  grabStartTime = time;
-        //  recordedGrabTime = true;
+        //if (!recordedGrabberTime) {
+        //  grabberStartTime = time;
+        //  recordedGrabberTime = true;
         //}
 
         //m_grabber.dropGamePiece(0.5);
@@ -219,8 +221,9 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     m_drivetrain.drivePeriodic();
+    this.scoringControl();
     m_elevator.operateElevatorPeriodic();
-    //m_grabber.operateGrabPeriodic();
+    m_grabber.operateGrabPeriodic();
   }
 
   /** This function is called once when the robot is disabled. */
@@ -272,16 +275,36 @@ public class Robot extends TimedRobot {
 
   //** This function is called to organize the smart controls of the elevator and grabber. */
   public void scoringControl() {
-    Target theTarget;
-
     if (m_input.isP2YDown()) {
-      theTarget = Target.HIGH;
+      userTarget = Target.HIGH;
     } else if (m_input.isP2BDown()) {
-      theTarget = Target.MID;
+      userTarget = Target.MID;
     } else if (m_input.isP2ADown()) {
-      theTarget = Target.LOW;
-    } else {
-      theTarget = Target.NONE;
+      userTarget = Target.LOW;
+    } else if (m_input.isP2LeftBumperDown()) { 
+      userTarget = Target.DOUBLE;
+    } else if (m_input.isP2RightBumperDown()) { 
+      userTarget = Target.SINGLE;
+    } else if (!(m_elevator.getState() == State.EXTENDING)) {
+      userTarget = Target.NONE;
     }
+
+    if (m_input.isP1DPadUp() || m_elevator.getState() == State.EXTENDING) { 
+      m_elevator.extendElevator(userTarget);
+    } else if (m_input.isP1DPadDown() || m_elevator.getState() == State.RETRACTING) { 
+      m_elevator.retractElevator();
+    }
+
+    //if (m_grabber.getAction() == Action.NONE && m_elevator.getState() == State.EXTENDED) {
+
+      //if (!recordedGrabberTime) {
+      //  grabberStartTime = time;
+      //  recordedGrabberTime = true;
+      //}
+
+      //m_grabber.checkForGamePiece();
+
+      //if ()
+    //} 
   }
 }
