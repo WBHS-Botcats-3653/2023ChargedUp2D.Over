@@ -31,6 +31,7 @@ public class Elevator {
 
     public enum Target {
         NONE,
+        ZERO,
         HIGH,
         MID,
         LOW,
@@ -95,12 +96,19 @@ public class Elevator {
 		return m_singleton;
 	}
 
-    public void extendElevator(Target theTarget) {
+    public void positionElevator(Target theTarget) {
         switch (theTarget) {
             case HIGH: 
 
                 if ((m_elevatorWinchMaster.getSelectedSensorPosition() < kHighTargetPoint) && !hasInput) {
                     output = (kHighTargetPoint - m_elevatorWinchMaster.getSelectedSensorPosition()) * kElevatorP;
+                
+                    elevatorState = State.EXTENDING;
+                    elevatorTarget = Target.HIGH;
+                
+                    m_elevatorWinchMaster.set(output);
+                } else if ((m_elevatorWinchMaster.getSelectedSensorPosition() > kHighTargetPoint + kElevatorDeadband) && !hasInput) {
+                    output = (kHighTargetPoint - kElevatorDelta - m_elevatorWinchMaster.getSelectedSensorPosition()) * kElevatorP;
                 
                     elevatorState = State.EXTENDING;
                     elevatorTarget = Target.HIGH;
@@ -118,6 +126,13 @@ public class Elevator {
 
                 if ((m_elevatorWinchMaster.getSelectedSensorPosition() < kMidTargetPoint) && !hasInput) {
                     output = (kMidTargetPoint - m_elevatorWinchMaster.getSelectedSensorPosition()) * kElevatorP;
+                
+                    elevatorState = State.EXTENDING;
+                    elevatorTarget = Target.MID;
+                
+                    m_elevatorWinchMaster.set(output);
+                } else if ((m_elevatorWinchMaster.getSelectedSensorPosition() > kMidTargetPoint + kElevatorDeadband) && !hasInput) {
+                    output = (kMidTargetPoint - kElevatorDelta - m_elevatorWinchMaster.getSelectedSensorPosition()) * kElevatorP;
                 
                     elevatorState = State.EXTENDING;
                     elevatorTarget = Target.MID;
@@ -141,6 +156,13 @@ public class Elevator {
                     elevatorTarget = Target.LOW;
                 
                     m_elevatorWinchMaster.set(output);
+                } else if ((m_elevatorWinchMaster.getSelectedSensorPosition() > kLowTargetPoint + kElevatorDeadband) && !hasInput) {
+                    output = (kLowTargetPoint - kElevatorDelta - m_elevatorWinchMaster.getSelectedSensorPosition()) * kElevatorP;
+                
+                    elevatorState = State.EXTENDING;
+                    elevatorTarget = Target.LOW;
+                
+                    m_elevatorWinchMaster.set(output);
                 } else if (m_elevatorWinchMaster.getSelectedSensorPosition() >= kLowTargetPoint) {
                     elevatorState = State.EXTENDED;
                     elevatorTarget = Target.NONE;
@@ -153,6 +175,13 @@ public class Elevator {
 
                 if ((m_elevatorWinchMaster.getSelectedSensorPosition() < kDoubleTargetPoint) && !hasInput) {
                     output = (kDoubleTargetPoint - m_elevatorWinchMaster.getSelectedSensorPosition()) * kElevatorP;
+                
+                    elevatorState = State.EXTENDING;
+                    elevatorTarget = Target.DOUBLE;
+                
+                    m_elevatorWinchMaster.set(output);
+                } else if ((m_elevatorWinchMaster.getSelectedSensorPosition() > kDoubleTargetPoint + kElevatorDeadband) && !hasInput) {
+                    output = (kDoubleTargetPoint - kElevatorDelta - m_elevatorWinchMaster.getSelectedSensorPosition()) * kElevatorP;
                 
                     elevatorState = State.EXTENDING;
                     elevatorTarget = Target.DOUBLE;
@@ -175,8 +204,33 @@ public class Elevator {
                     elevatorTarget = Target.SINGLE;
                 
                     m_elevatorWinchMaster.set(output);
+                } else if ((m_elevatorWinchMaster.getSelectedSensorPosition() > kSingleTargetPoint + kElevatorDeadband) && !hasInput) {
+                    output = (kSingleTargetPoint - kElevatorDelta - m_elevatorWinchMaster.getSelectedSensorPosition()) * kElevatorP;
+                
+                    elevatorState = State.EXTENDING;
+                    elevatorTarget = Target.SINGLE;
+                
+                    m_elevatorWinchMaster.set(output);
                 } else if (m_elevatorWinchMaster.getSelectedSensorPosition() >= kSingleTargetPoint) {
                     elevatorState = State.EXTENDED;
+                    elevatorTarget = Target.NONE;
+                
+                    m_elevatorWinchMaster.set(0);
+                }
+
+                break;
+            case ZERO:
+
+                if ((m_elevatorWinchMaster.getSelectedSensorPosition() > kMinExtensionPoint) && !hasInput) {
+                    output = (kMinExtensionPoint - m_elevatorWinchMaster.getSelectedSensorPosition()) * kElevatorP;
+                
+                    elevatorState = State.RETRACTING;
+                    elevatorTarget = Target.ZERO;
+                
+                    m_elevatorWinchMaster.set(output);
+                
+                } else if (m_elevatorWinchMaster.getSelectedSensorPosition() <= kMinExtensionPoint) {
+                    elevatorState = State.RETRACTED;
                     elevatorTarget = Target.NONE;
                 
                     m_elevatorWinchMaster.set(0);
@@ -192,29 +246,12 @@ public class Elevator {
         this.updateSmartDashboard();
     }
 
-    public void retractElevator() {
-        if ((m_elevatorWinchMaster.getSelectedSensorPosition() > kMinExtensionPoint) && !hasInput) {
-            output = (kMinExtensionPoint - m_elevatorWinchMaster.getSelectedSensorPosition()) * kElevatorP;
-        
-            elevatorState = State.RETRACTING;
-            elevatorTarget = Target.NONE;
-        
-            m_elevatorWinchMaster.set(output);
-        } else if (m_elevatorWinchMaster.getSelectedSensorPosition() <= kMinExtensionPoint) {
-            elevatorState = State.RETRACTED;
-        
-            m_elevatorWinchMaster.set(0);
-        }
-
-        this.updateSmartDashboard();
-    }
-
     public void operateElevatorPeriodic() {
         //if (m_input.isP1LeftTriggerDown() && m_elevatorWinchMaster.getSelectedSensorPosition() > kMinExtensionPoint) {
         if (m_input.isP1LeftTriggerDown()) {
             m_elevatorWinchMaster.set(-m_input.getP1LeftTriggerAxis());
+ 
             Robot.userTarget = Target.NONE;
-
             hasInput = true;
         } else if (m_input.isP1RightTriggerDown() && m_elevatorWinchMaster.getSelectedSensorPosition() < kMaxExtensionPoint) {
         //} else if (m_input.isP1RightTriggerDown()) {
@@ -228,6 +265,10 @@ public class Elevator {
             hasInput = false;
         }
 
+        if (m_elevatorWinchMaster.getStatorCurrent() > 55 || m_elevatorWinchSlave.getStatorCurrent() > 55) {
+            m_elevatorWinchMaster.set(0);
+        }
+    
         this.updateSmartDashboard();
     }
 

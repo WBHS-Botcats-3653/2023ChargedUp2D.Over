@@ -47,12 +47,19 @@ public class Robot extends TimedRobot {
   private OI m_input;
   //private Limelight m_limelight;
 
+  private static enum TargetStyle {
+    COLLECTING,
+    SCORING,
+    NONE
+  }
+
   public static double time;
 
   public static double grabberStartTime;
   public static boolean recordedGrabberTime = false;
   public static boolean doneMobilizing = false;
   public static Target userTarget = Target.NONE;
+  private static TargetStyle currentTargetStyle = TargetStyle.NONE;
 
   
   /**
@@ -277,34 +284,63 @@ public class Robot extends TimedRobot {
   public void scoringControl() {
     if (m_input.isP2YDown()) {
       userTarget = Target.HIGH;
+      currentTargetStyle = TargetStyle.SCORING;
     } else if (m_input.isP2BDown()) {
       userTarget = Target.MID;
+      currentTargetStyle = TargetStyle.SCORING;
     } else if (m_input.isP2ADown()) {
+      //System.out.println("A being held");
       userTarget = Target.LOW;
+      currentTargetStyle = TargetStyle.SCORING;
     } else if (m_input.isP2LeftBumperDown()) { 
       userTarget = Target.DOUBLE;
+      currentTargetStyle = TargetStyle.COLLECTING;
     } else if (m_input.isP2RightBumperDown()) { 
       userTarget = Target.SINGLE;
+      currentTargetStyle = TargetStyle.COLLECTING;
     } else if (!(m_elevator.getState() == State.EXTENDING)) {
       userTarget = Target.NONE;
     }
 
     if (m_input.isP1DPadUp() || m_elevator.getState() == State.EXTENDING) { 
-      m_elevator.extendElevator(userTarget);
+      //System.out.println("extending");
+      m_elevator.positionElevator(userTarget);
     } else if (m_input.isP1DPadDown() || m_elevator.getState() == State.RETRACTING) { 
-      m_elevator.retractElevator();
+      m_elevator.positionElevator(Target.ZERO);
     }
 
-    //if (m_grabber.getAction() == Action.NONE && m_elevator.getState() == State.EXTENDED) {
+    if (m_elevator.getState() == State.EXTENDED || m_elevator.getState() == State.RETRACTING) {
+      //System.out.println("started grabber/retracting sequence");
 
-      //if (!recordedGrabberTime) {
-      //  grabberStartTime = time;
-      //  recordedGrabberTime = true;
-      //}
+      if (!recordedGrabberTime) {
+        //System.out.println("recorded grab time");
+        grabberStartTime = time;
+        recordedGrabberTime = true;
+      }
 
-      //m_grabber.checkForGamePiece();
+      if (currentTargetStyle == TargetStyle.COLLECTING) {
+        //System.out.println("collected evaluate true");
 
-      //if ()
-    //} 
+        //m_grabber.checkForGamePiece(false);
+        m_grabber.grabGamePiece(1, 3);
+
+      } else if (currentTargetStyle == TargetStyle.SCORING) {
+        //System.out.println("scoring evaluated true");
+
+        //m_grabber.checkForGamePiece(true);
+        m_grabber.dropGamePiece(0.25, 0.4);
+
+      } else if (m_grabber.getAction() == Action.NONE) {
+        //System.out.println("started retracting");
+
+        m_elevator.positionElevator(Target.ZERO);
+        recordedGrabberTime = false;
+
+      }
+    } 
+  }
+
+  public static void resetCurrentTargetStyle() {
+    currentTargetStyle = TargetStyle.NONE;
   }
 }

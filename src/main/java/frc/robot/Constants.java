@@ -30,12 +30,14 @@ public class Constants {
     // constants for the elevator 
     public static final double kMaxExtensionPoint = 90000;
     public static final double kMinExtensionPoint = 0;
-    public static final double kHighTargetPoint = 0;
-    public static final double kMidTargetPoint = 0;
-    public static final double kLowTargetPoint = 0;
+    public static final double kHighTargetPoint = 87052;
+    public static final double kMidTargetPoint = 64621;
+    public static final double kLowTargetPoint = 26471;
     public static final double kDoubleTargetPoint = 57000;
-    public static final double kSingleTargetPoint = 0;
-    public static final double kElevatorP = 0.0002;
+    public static final double kSingleTargetPoint = 37105;
+    public static final double kElevatorDeadband = 2048;
+    public static final double kElevatorDelta = 0;
+    public static final double kElevatorP = 0.00025;
     
     // artificial deadzone for the sticks
     public static  final double kArtificialStickDeadzone = 0.05;

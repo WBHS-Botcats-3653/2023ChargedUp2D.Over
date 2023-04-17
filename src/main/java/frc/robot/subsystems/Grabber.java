@@ -66,14 +66,46 @@ public class Grabber {
         this.updateSmartDashboard();
     }
 
+    public void grabGamePiece(double ingestSpeed, double actionTime) {
+        if (actionTime > Robot.time - Robot.grabberStartTime) {
+            //System.out.println("started grabbing");
+            hasGrabInput = true;
+            grabberAction = Action.GRABBING;
+            m_grabber.set(Math.abs(ingestSpeed));
+        } else {
+            //System.out.println("stopped grabbing");
+            grabberAction = Action.NONE;
+            m_grabber.set(0);
+            Robot.resetCurrentTargetStyle();
+        }
+
+        this.updateSmartDashboard();
+    }
+
     public void grabGamePiece(double ingestSpeed) {
         if (!hasGamepiece) {
             hasGrabInput = true;
             grabberAction = Action.GRABBING;
-            m_grabber.set(ingestSpeed);
+            m_grabber.set(Math.abs(ingestSpeed));
         } else {
             grabberAction = Action.NONE;
             m_grabber.set(0);
+        }
+
+        this.updateSmartDashboard();
+    }
+
+    public void dropGamePiece(double ejectSpeed, double actionTime) {
+        if (actionTime > Robot.time - Robot.grabberStartTime) {
+            //System.out.println("started dropping");
+            hasDropInput = true;
+            grabberAction = Action.DROPPING;
+            m_grabber.set(-Math.abs(ejectSpeed));
+        } else {
+            //System.out.println("stopped dropping");
+            grabberAction = Action.NONE;
+            m_grabber.set(0);
+            Robot.resetCurrentTargetStyle();
         }
 
         this.updateSmartDashboard();
@@ -83,7 +115,7 @@ public class Grabber {
         if (hasGamepiece) {
             hasDropInput = true;
             grabberAction = Action.DROPPING;
-            m_grabber.set(-ejectSpeed);
+            m_grabber.set(-Math.abs(ejectSpeed));
         } else {
             grabberAction = Action.NONE;
             m_grabber.set(0);
@@ -102,18 +134,18 @@ public class Grabber {
         if (m_input.isP1DPadLeft()) {
             hasDropInput = true;
             
-            grabberAction = Action.DROPPING;
-            m_grabber.set(-0.5);
+            //grabberAction = Action.DROPPING;
+            m_grabber.set(-0.25);
         } else if (m_input.isP1DPadRight()) {
             hasGrabInput = true;
 
-            grabberAction = Action.GRABBING;
+            //grabberAction = Action.GRABBING;
             m_grabber.set(1);
-        } else {
+        } else if (grabberAction == Action.NONE) {
             hasDropInput = false;
             hasGrabInput = false;
 
-            grabberAction = Action.NONE;
+            //grabberAction = Action.NONE;
             m_grabber.set(0);
         }
 
