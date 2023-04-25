@@ -37,7 +37,8 @@ public class Constants {
     public static final double kSingleTargetPoint = 37105;
     public static final double kElevatorDeadband = 2048;
     public static final double kElevatorDelta = 0;
-    public static final double kElevatorP = 0.00025;
+    public static final double kElevatorP = 0.00028;
+    public static final double kCubeOffsetScaleFactor = 0.7717391304;
     
     // artificial deadzone for the sticks
     public static  final double kArtificialStickDeadzone = 0.05;

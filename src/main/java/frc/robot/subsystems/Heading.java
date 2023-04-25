@@ -42,13 +42,13 @@ public class Heading {
         accelY = m_IMU.getAccelY();
         accelZ = m_IMU.getAccelZ();
         
-        SmartDashboard.putNumber("IMU Gyro X", gyroX);    
+        //SmartDashboard.putNumber("IMU Gyro X", gyroX);    
         SmartDashboard.putNumber("IMU Gyro Y", gyroY);
-        SmartDashboard.putNumber("IMU Gyro Z", gyroZ);
+        //SmartDashboard.putNumber("IMU Gyro Z", gyroZ);
 
-        SmartDashboard.putNumber("IMU Accel X", accelX);
-        SmartDashboard.putNumber("IMU Accel Y", accelY);
-        SmartDashboard.putNumber("IMU Accel Z", accelZ);
+        //SmartDashboard.putNumber("IMU Accel X", accelX);
+        //SmartDashboard.putNumber("IMU Accel Y", accelY);
+        //SmartDashboard.putNumber("IMU Accel Z", accelZ);
     }
 
     public void resetIMU() {

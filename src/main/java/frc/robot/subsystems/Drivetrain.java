@@ -30,10 +30,13 @@ public class Drivetrain {
 
     private double feetTraveled;
 
+    public static boolean doneBackingUp = false;
+    public static boolean donePushing = false;
+    public static boolean doneMobilizing = false;
     public static boolean doneCharging = false;    
-    public static boolean doneBackingUp= false;
-    public static boolean donePushing= false;
-    public static boolean doneMobilizing= false;
+    public static boolean recordedChargeStartTime = false;
+    public static double chargeStartTime;
+
 
     private Drivetrain() {
         m_input = OI.getInstance();
@@ -113,7 +116,7 @@ public class Drivetrain {
             m_robotDrive.arcadeDrive(-m_input.getP1LeftY(), -m_input.getP1RightX() * kRotationDampenerCoefficient);
         }
 
-        this.updateSmartDashboard();
+        //this.updateSmartDashboard();
     } 
 
     public void parkPeriodic() {
@@ -131,21 +134,22 @@ public class Drivetrain {
             doneMobilizing = true;
         }
 
-        this.updateSmartDashboard();
+        //this.updateSmartDashboard();
     }
 
     // auto that engages with charge station
     public void chargePeriodic() {
         feetTraveled = (m_leftMaster.getSelectedSensorPosition() * kDriveTicksToFeet + m_rightMaster.getSelectedSensorPosition() * kDriveTicksToFeet) / 2;
 
-        if (feetTraveled > -11.40125 && !doneCharging || (m_heading.getAccelY() < 9.7 && m_heading.getAccelY() > 9.9)) {
-            m_robotDrive.arcadeDrive(-0.7, 0);
+        //if (feetTraveled > -11.40125 && !doneCharging || (m_heading.getAccelY() < 9.7 && m_heading.getAccelY() > 9.9)) {
+        if (feetTraveled > -11.40125 && !doneCharging) {
+            m_robotDrive.arcadeDrive(-0.65, 0);
         } else {
             m_robotDrive.arcadeDrive(0, 0);
             doneCharging = true;
         }
 
-        this.updateSmartDashboard();
+        //this.updateSmartDashboard();
     }
 
     // auto that scores a game piece in hybrid and mobilizes 
@@ -153,7 +157,7 @@ public class Drivetrain {
         feetTraveled = (m_leftMaster.getSelectedSensorPosition() * kDriveTicksToFeet + m_rightMaster.getSelectedSensorPosition() * kDriveTicksToFeet) / 2;
 
         if (feetTraveled >= -2 && !doneBackingUp) {
-            m_robotDrive.arcadeDrive(-0.7, 0);
+            m_robotDrive.arcadeDrive(-0.67, 0);
         } else if (feetTraveled <= -0.1 && !donePushing) {
             doneBackingUp = true;
             m_robotDrive.arcadeDrive(0.5, 0);
@@ -164,7 +168,7 @@ public class Drivetrain {
             doneMobilizing = true;
         }
 
-        this.updateSmartDashboard();
+        //this.updateSmartDashboard();
     }
 
     // auto that scores a game piece in hybrid, mobilizes, and engages with charge station
@@ -172,7 +176,7 @@ public class Drivetrain {
         feetTraveled = (m_leftMaster.getSelectedSensorPosition() * kDriveTicksToFeet + m_rightMaster.getSelectedSensorPosition() * kDriveTicksToFeet) / 2;
 
         if (feetTraveled >= -2 && !doneBackingUp) {
-            m_robotDrive.arcadeDrive(-0.7, 0);
+            m_robotDrive.arcadeDrive(-0.67, 0);
         } else if (feetTraveled <= -0.1 && !donePushing) {
             doneBackingUp = true;
             m_robotDrive.arcadeDrive(0.5, 0);
@@ -187,24 +191,46 @@ public class Drivetrain {
             doneCharging = true;
         }
 
-        this.updateSmartDashboard();
+        //this.updateSmartDashboard();
     }
 
     public void wereSoBackPeriodic() {
         feetTraveled = (m_leftMaster.getSelectedSensorPosition() * kDriveTicksToFeet + m_rightMaster.getSelectedSensorPosition() * kDriveTicksToFeet) / 2;
 
-        if (feetTraveled > -13 && !doneMobilizing) {
+        if (feetTraveled > -11.5 && !doneMobilizing) {
             m_robotDrive.arcadeDrive(-0.65, 0);
-        } else if (feetTraveled >= -12.40125 && !doneCharging) {
+        } else if (feetTraveled <= -10.90125 && !doneCharging && !recordedChargeStartTime) {
             // || (m_heading.getAccelY() < 9.68)
             doneMobilizing = true;
-            m_robotDrive.arcadeDrive(0.65, 0);
+            chargeStartTime = Robot.time;
+            recordedChargeStartTime = true;
+        } else if (feetTraveled <= -12.40125 && !doneCharging && recordedChargeStartTime) {
+            if (1.3 < Robot.time - chargeStartTime) {
+                m_robotDrive.arcadeDrive(0.65, 0);
+            }
+        } else if (m_heading.getGyroY() > 6 && m_heading.getGyroY() < 180) {
+            m_robotDrive.arcadeDrive(0.6, 0);
+        } else if (m_heading.getGyroY() < 353 && m_heading.getGyroY() > 180) {
+            m_robotDrive.arcadeDrive(-0.6, 0);
         } else {
             m_robotDrive.arcadeDrive(0, 0);
             doneCharging = true;
         }
 
-        this.updateSmartDashboard();
+        //this.updateSmartDashboard();
+    }
+    
+    public void andSoIPersistPeriodic() {
+        feetTraveled = (m_leftMaster.getSelectedSensorPosition() * kDriveTicksToFeet + m_rightMaster.getSelectedSensorPosition() * kDriveTicksToFeet) / 2;
+
+        if (feetTraveled > -11.5 && !doneMobilizing) {
+            m_robotDrive.arcadeDrive(-0.68, 0);
+        } else {
+            m_robotDrive.arcadeDrive(0, 0);
+            doneMobilizing = true;
+        }
+
+        //this.updateSmartDashboard();
     }
     
     public void resetEncoders() {

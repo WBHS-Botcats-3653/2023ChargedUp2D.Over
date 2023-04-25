@@ -47,7 +47,7 @@ public class Robot extends TimedRobot {
   private OI m_input;
   //private Limelight m_limelight;
 
-  private static enum TargetStyle {
+  public static enum TargetStyle {
     COLLECTING,
     SCORING,
     NONE
@@ -57,10 +57,20 @@ public class Robot extends TimedRobot {
 
   public static double grabberStartTime;
   public static boolean recordedGrabberTime = false;
+
   public static boolean doneMobilizing = false;
+
   public static Target userTarget = Target.NONE;
   private static TargetStyle currentTargetStyle = TargetStyle.NONE;
+  private static boolean cubeMode = false;
 
+  private static double elevatorCalibrationStartTime;
+  private static boolean startedCalibratingElevator = false;
+  private static boolean calibratedElevator = false;
+
+  private static boolean startedScoring = false;
+  private static boolean finishedScoring = false;
+  private static boolean startedDropping = false;
   
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -95,7 +105,7 @@ public class Robot extends TimedRobot {
         // Put two player mode initializations here
         // controller ports
         kP1XboxPort = 0;
-        kP2XboxPort = 1;
+        kP2XboxPort = 2;
         break;
       case kOnePlayerMode:
       default:
@@ -155,53 +165,59 @@ public class Robot extends TimedRobot {
 
         m_drivetrain.parkPeriodic();
 
-        m_grabber.checkForGamePiece(true);
+        if (!startedScoring) {
+          m_elevator.positionElevator(Target.HIGH); //, false
+          startedScoring = true;
+        } else if (startedScoring && !finishedScoring) {
 
-        if (!recordedGrabberTime) {
-          grabberStartTime = time;
-          recordedGrabberTime = true;
-        }
+          if (m_elevator.getState() == State.RETRACTED) {
+            finishedScoring = true;
+          }
 
-        m_grabber.dropGamePiece(0.5);
+          this.autoScore(Target.HIGH);
+        };
 
         break;
       case kMobilizeAuto:
         // Put mobilize auto code here
 
-        //m_grabber.checkForGamePiece();
+        if (!startedScoring) {
+          m_elevator.positionElevator(Target.HIGH); //, false
+          startedScoring = true;
+        } else if (startedScoring && !finishedScoring) {
 
-        //if (!recordedGrabberTime) {
-        //  grabberStartTime = time;
-        //  recordedGrabberTime = true;
-        //}
+          if (m_elevator.getState() == State.RETRACTED) {
+            finishedScoring = true;
+          }
 
-        //m_grabber.dropGamePiece(0.5);
+          this.autoScore(Target.HIGH);
+        } else {
+          m_drivetrain.mobilizePeriodic();
+        }
 
-        //if (m_grabber.getGrabberState().equals("idle")){
-        //  m_drivetrain.mobilizePeriodic();
-        //}
-
-        m_drivetrain.yippiePeriodic(); 
+        //m_drivetrain.yippiePeriodic(); 
 
         break;
       case kChargeAuto:
         // Put charge station auto code here
-        //m_drivetrain.chargePeriodic();
         
-        //m_grabber.checkForGamePiece();
+        if (!startedScoring) {
+          m_elevator.positionElevator(Target.HIGH); //, false
+          startedScoring = true;
+        } else if (startedScoring && !finishedScoring) {
 
-        //if (!recordedGrabberTime) {
-        //  grabberStartTime = time;
-        //  recordedGrabberTime = true;
-        //}
+          if (m_elevator.getState() == State.RETRACTED) {
+            finishedScoring = true;
+          }
 
-        //m_grabber.dropGamePiece(0.5);
-        //
-        //if (m_grabber.getGrabberState().equals("idle")){
-        //  m_drivetrain.wereSoBackPeriodic();
-        //}
+          this.autoScore(Target.HIGH);
+        } else {
+          //m_drivetrain.andSoIPersistPeriodic();
+          m_drivetrain.wereSoBackPeriodic();
+        }
 
-        m_drivetrain.lolLmaoPeriodic();
+        //m_drivetrain.wereSoBackPeriodic();
+        // m_drivetrain.lolLmaoPeriodic();
 
         break;
       case kIdleAuto:
@@ -229,8 +245,10 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     m_drivetrain.drivePeriodic();
     this.scoringControl();
+    //this.calibrateElevator();
     m_elevator.operateElevatorPeriodic();
     m_grabber.operateGrabPeriodic();
+    //m_grabber.secureGamePiece();
   }
 
   /** This function is called once when the robot is disabled. */
@@ -302,18 +320,24 @@ public class Robot extends TimedRobot {
       userTarget = Target.NONE;
     }
 
+    //if (m_input.isP2MenuDown() || (cubeMode && m_elevator.getState() == State.EXTENDING)) {
+    //  cubeMode = true;
+    //} else {
+    //  cubeMode = false;
+    //}
+
     if (m_input.isP1DPadUp() || m_elevator.getState() == State.EXTENDING) { 
       //System.out.println("extending");
-      m_elevator.positionElevator(userTarget);
+      m_elevator.positionElevator(userTarget); //, cubeMode
     } else if (m_input.isP1DPadDown() || m_elevator.getState() == State.RETRACTING) { 
-      m_elevator.positionElevator(Target.ZERO);
+      m_elevator.positionElevator(Target.ZERO); //, false
     }
 
     if (m_elevator.getState() == State.EXTENDED || m_elevator.getState() == State.RETRACTING) {
       //System.out.println("started grabber/retracting sequence");
 
       if (!recordedGrabberTime) {
-        //System.out.println("recorded grab time");
+        //System.out.printlns("recorded grab time");
         grabberStartTime = time;
         recordedGrabberTime = true;
       }
@@ -322,18 +346,18 @@ public class Robot extends TimedRobot {
         //System.out.println("collected evaluate true");
 
         //m_grabber.checkForGamePiece(false);
-        m_grabber.grabGamePiece(1, 3);
+        m_grabber.grabGamePiece(1);
 
       } else if (currentTargetStyle == TargetStyle.SCORING) {
         //System.out.println("scoring evaluated true");
 
         //m_grabber.checkForGamePiece(true);
-        m_grabber.dropGamePiece(0.25, 0.4);
+        m_grabber.dropGamePiece(0.25, 0.55);
 
       } else if (m_grabber.getAction() == Action.NONE) {
         //System.out.println("started retracting");
 
-        m_elevator.positionElevator(Target.ZERO);
+        m_elevator.positionElevator(Target.ZERO); //, false
         recordedGrabberTime = false;
 
       }
@@ -343,4 +367,56 @@ public class Robot extends TimedRobot {
   public static void resetCurrentTargetStyle() {
     currentTargetStyle = TargetStyle.NONE;
   }
+
+  public static TargetStyle getCurrentTargetStyle() {
+    return currentTargetStyle;
+  }
+
+  public void autoScore(Target autoTarget) {
+    if (m_elevator.getState() == State.EXTENDING) { 
+      m_elevator.positionElevator(autoTarget); //, false
+    } else if (m_elevator.getState() == State.RETRACTING) { 
+      m_elevator.positionElevator(Target.ZERO); //, false
+    }
+
+    if (m_elevator.getState() == State.EXTENDED || m_elevator.getState() == State.RETRACTING) {
+      
+      if (!recordedGrabberTime) {
+        grabberStartTime = time;
+        recordedGrabberTime = true;
+      }
+
+      if (!startedDropping) {
+        m_grabber.dropGamePiece(0.25, 0.4);
+        startedDropping = true;
+      } else if (!(m_grabber.getAction() == Action.NONE)) {
+        m_grabber.dropGamePiece(0.25, 0.4);
+      } else {
+        m_elevator.positionElevator(Target.ZERO); //, false
+        recordedGrabberTime = false;
+      }
+    } 
+  }
+
+  //public void calibrateElevator() {
+  //  if (m_input.isP1StartDown()) {
+
+  //    if (!startedCalibratingElevator) {
+  //      elevatorCalibrationStartTime = time;
+  //      startedCalibratingElevator = true;
+  //    }
+  //    
+  //    if (1.5 < time - elevatorCalibrationStartTime) {
+  //      m_elevator.resetEncoder();
+  //      System.out.println("calibrated elevator");
+  //    }
+  //    if (1 < time - elevatorCalibrationStartTime + 1.5) {
+  //      calibratedElevator = true;
+  //    } else {
+  //      calibratedElevator = false;
+  //    }
+  //  }
+  //  SmartDashboard.putBoolean("Finished Calibrating Elevator", calibratedElevator);
+  //  //calibratedElevator = false;
+  //}
 }

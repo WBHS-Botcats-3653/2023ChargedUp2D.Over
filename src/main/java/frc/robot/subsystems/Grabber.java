@@ -1,6 +1,9 @@
 package frc.robot.subsystems;
 
 import static frc.robot.Constants.*;
+
+import javax.naming.ldap.ManageReferralControl;
+
 import frc.robot.Robot;
 import frc.robot.subsystems.Elevator;
 
@@ -18,7 +21,15 @@ public class Grabber {
 
     private boolean hasDropInput = false;
     private boolean hasGrabInput = false;
+    private boolean hasManualInput = false;
     private boolean hasGamepiece = true;
+    private boolean isSecuringCycle = false;
+    private boolean recordedSecuringCycleToggle = false;
+    private double securingCycleToggleTime;
+
+    private boolean recordedDropStartTime = false;
+    private double dropStartTime;
+
         
     public static enum Action {
         NONE,
@@ -63,7 +74,7 @@ public class Grabber {
             }
         }
 
-        this.updateSmartDashboard();
+        //this.updateSmartDashboard();
     }
 
     public void grabGamePiece(double ingestSpeed, double actionTime) {
@@ -75,24 +86,25 @@ public class Grabber {
         } else {
             //System.out.println("stopped grabbing");
             grabberAction = Action.NONE;
-            m_grabber.set(0);
+            m_grabber.set(0.2);
             Robot.resetCurrentTargetStyle();
         }
 
-        this.updateSmartDashboard();
+        //this.updateSmartDashboard();
     }
 
     public void grabGamePiece(double ingestSpeed) {
-        if (!hasGamepiece) {
+        if (m_input.isP2LeftBumperDown() || m_input.isP2RightBumperDown()) {
             hasGrabInput = true;
             grabberAction = Action.GRABBING;
             m_grabber.set(Math.abs(ingestSpeed));
         } else {
             grabberAction = Action.NONE;
-            m_grabber.set(0);
+            m_grabber.set(0.2);
+            Robot.resetCurrentTargetStyle();
         }
 
-        this.updateSmartDashboard();
+        //this.updateSmartDashboard();
     }
 
     public void dropGamePiece(double ejectSpeed, double actionTime) {
@@ -104,24 +116,59 @@ public class Grabber {
         } else {
             //System.out.println("stopped dropping");
             grabberAction = Action.NONE;
-            m_grabber.set(0);
+            m_grabber.set(0.2);
             Robot.resetCurrentTargetStyle();
         }
 
-        this.updateSmartDashboard();
+        //this.updateSmartDashboard();
     }
 
     public void dropGamePiece(double ejectSpeed) {
-        if (hasGamepiece) {
-            hasDropInput = true;
-            grabberAction = Action.DROPPING;
-            m_grabber.set(-Math.abs(ejectSpeed));
-        } else {
-            grabberAction = Action.NONE;
-            m_grabber.set(0);
+        if ((m_input.isP1YDown() || m_input.isP1BDown() || m_input.isP1ADown())) {
+            dropStartTime = Robot.time;
+            //recordedDropStartTime = true;
+
+        } else if (!(m_input.isP1YDown() || m_input.isP1BDown() || m_input.isP1ADown())){
+
+            if (dropStartTime < Robot.time - Robot.grabberStartTime) {
+                hasDropInput = true;
+                grabberAction = Action.DROPPING;
+                m_grabber.set(-Math.abs(ejectSpeed));
+            } else {
+                grabberAction = Action.NONE;
+                m_grabber.set(0.2);
+                Robot.resetCurrentTargetStyle();
+                recordedDropStartTime = false;
+            }
         }
 
-        this.updateSmartDashboard();
+        //this.updateSmartDashboard();
+    }
+
+    public void secureGamePiece() {
+        if (grabberAction == Action.NONE && !hasManualInput) {
+            if (isSecuringCycle && !recordedSecuringCycleToggle) {
+                securingCycleToggleTime = Robot.time;
+                recordedSecuringCycleToggle = true;
+            } else if (isSecuringCycle && recordedSecuringCycleToggle) {
+                if (0.5 < Robot.time - securingCycleToggleTime) {
+                    m_grabber.set(0.7);
+                } else {
+                    isSecuringCycle = false;
+                    recordedSecuringCycleToggle = false;
+                }
+            } else if (!isSecuringCycle && !recordedSecuringCycleToggle) {
+                securingCycleToggleTime = Robot.time;
+                recordedSecuringCycleToggle = true;
+            } else if (!isSecuringCycle && recordedSecuringCycleToggle) {
+                if (1 < Robot.time - securingCycleToggleTime) {
+                    m_grabber.set(0);
+                } else {
+                    isSecuringCycle = true;
+                    recordedSecuringCycleToggle = false;
+                }
+            }
+        }
     }
 
     public void operateGrabPeriodic() {
@@ -133,23 +180,26 @@ public class Grabber {
 
         if (m_input.isP1DPadLeft()) {
             hasDropInput = true;
+            hasManualInput = true;
             
             //grabberAction = Action.DROPPING;
             m_grabber.set(-0.25);
         } else if (m_input.isP1DPadRight()) {
             hasGrabInput = true;
+            hasManualInput = true;
 
             //grabberAction = Action.GRABBING;
             m_grabber.set(1);
         } else if (grabberAction == Action.NONE) {
             hasDropInput = false;
             hasGrabInput = false;
+            hasManualInput = false;
 
             //grabberAction = Action.NONE;
-            m_grabber.set(0);
+            m_grabber.set(0.2);
         }
 
-        this.updateSmartDashboard();
+        //this.updateSmartDashboard();
     }
 
     public void updateSmartDashboard() {

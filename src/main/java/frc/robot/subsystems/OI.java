@@ -12,8 +12,8 @@ public class OI {
     public XboxController m_p1Controller, m_p2Controller;
 
     private OI() {
-        m_p1Controller = new XboxController(Robot.kP1XboxPort);
-        m_p2Controller = new XboxController(Robot.kP2XboxPort);
+        m_p1Controller = new XboxController(0); //Robot.kP1XboxPort
+        m_p2Controller = new XboxController(2   ); //Robot.kP2XboxPort
     }
 
     public static OI getInstance() {
@@ -113,6 +113,14 @@ public class OI {
         return angle == 180;
     }
 
+    public boolean isP1StartDown() {
+        return m_p1Controller.getStartButton();
+    }
+
+    public boolean isP1MenuDown() {
+        return m_p1Controller.getBackButton();
+    }
+
     /** 
      * player two's inputs
      */
@@ -152,11 +160,11 @@ public class OI {
     }
 
     public boolean isP2LeftTriggerDown() {
-        return m_p1Controller.getLeftTriggerAxis() > 0.1;
+        return m_p2Controller.getLeftTriggerAxis() > 0.1;
     }
 
     public boolean isP2RightTriggerDown() {
-        return m_p1Controller.getRightTriggerAxis() > 0.1;
+        return m_p2Controller.getRightTriggerAxis() > 0.1;
     }
 
     public boolean isP2LeftBumperDown() {
@@ -168,19 +176,19 @@ public class OI {
     }
 
     public boolean isP2ADown() {
-        return m_p1Controller.getAButton();
+        return m_p2Controller.getAButton();
     }
 
     public boolean isP2BDown() {
-        return m_p1Controller.getBButton();
+        return m_p2Controller.getBButton();
     }
 
     public boolean isP2XDown() {
-        return m_p1Controller.getXButton();
+        return m_p2Controller.getXButton();
     }
 
     public boolean isP2YDown() {
-        return m_p1Controller.getYButton();
+        return m_p2Controller.getYButton();
     }
 
     public boolean isP2DPadUp() {
@@ -201,5 +209,13 @@ public class OI {
     public boolean isP2DPadDown() {
         int angle = m_p2Controller.getPOV();
         return angle == 180;
+    }
+
+    public boolean isP2StartDown() {
+        return m_p2Controller.getStartButton();
+    }
+    
+    public boolean isP2MenuDown() {
+        return m_p2Controller.getBackButton();
     }
 }

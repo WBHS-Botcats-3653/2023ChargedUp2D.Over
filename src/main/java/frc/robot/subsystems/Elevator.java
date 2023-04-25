@@ -46,6 +46,8 @@ public class Elevator {
     public static double grabStartTime;
     private boolean recordedExtendTime = false;
 
+    private double cubeModeOffset;
+
     private Elevator() {
         m_input = OI.getInstance();
         m_grabber = Grabber.getInstance();
@@ -96,20 +98,26 @@ public class Elevator {
 		return m_singleton;
 	}
 
-    public void positionElevator(Target theTarget) {
+    public void positionElevator(Target theTarget) { //, boolean isCubeMode
+        //if (isCubeMode) {
+        // cubeModeOffset = kCubeOffsetScaleFactor;
+        //} else {
+        // cubeModeOffset = 0;
+        //}
+
         switch (theTarget) {
             case HIGH: 
 
                 if ((m_elevatorWinchMaster.getSelectedSensorPosition() < kHighTargetPoint) && !hasInput) {
-                    output = (kHighTargetPoint - m_elevatorWinchMaster.getSelectedSensorPosition()) * kElevatorP;
-                
+                    output = ((kHighTargetPoint) - m_elevatorWinchMaster.getSelectedSensorPosition()) * kElevatorP;
+                // * cubeModeOffset
                     elevatorState = State.EXTENDING;
                     elevatorTarget = Target.HIGH;
                 
                     m_elevatorWinchMaster.set(output);
                 } else if ((m_elevatorWinchMaster.getSelectedSensorPosition() > kHighTargetPoint + kElevatorDeadband) && !hasInput) {
-                    output = (kHighTargetPoint - kElevatorDelta - m_elevatorWinchMaster.getSelectedSensorPosition()) * kElevatorP;
-                
+                    output = ((kHighTargetPoint) - kElevatorDelta - m_elevatorWinchMaster.getSelectedSensorPosition()) * kElevatorP;
+                // * cubeModeOffset
                     elevatorState = State.EXTENDING;
                     elevatorTarget = Target.HIGH;
                 
@@ -125,15 +133,15 @@ public class Elevator {
             case MID: 
 
                 if ((m_elevatorWinchMaster.getSelectedSensorPosition() < kMidTargetPoint) && !hasInput) {
-                    output = (kMidTargetPoint - m_elevatorWinchMaster.getSelectedSensorPosition()) * kElevatorP;
-                
+                    output = ((kMidTargetPoint) - m_elevatorWinchMaster.getSelectedSensorPosition()) * kElevatorP;
+                // * cubeModeOffset
                     elevatorState = State.EXTENDING;
                     elevatorTarget = Target.MID;
                 
                     m_elevatorWinchMaster.set(output);
                 } else if ((m_elevatorWinchMaster.getSelectedSensorPosition() > kMidTargetPoint + kElevatorDeadband) && !hasInput) {
-                    output = (kMidTargetPoint - kElevatorDelta - m_elevatorWinchMaster.getSelectedSensorPosition()) * kElevatorP;
-                
+                    output = ((kMidTargetPoint) - kElevatorDelta - m_elevatorWinchMaster.getSelectedSensorPosition()) * kElevatorP;
+                // * cubeModeOffset
                     elevatorState = State.EXTENDING;
                     elevatorTarget = Target.MID;
                 
@@ -142,8 +150,7 @@ public class Elevator {
                     elevatorState = State.EXTENDED;
                     elevatorTarget = Target.NONE;
                 
-                    m_elevatorWinchMaster
-                    .set(0);
+                    m_elevatorWinchMaster.set(0);
                 }
 
                 break;
@@ -274,7 +281,7 @@ public class Elevator {
 
     public void updateSmartDashboard() {
         SmartDashboard.putNumber("Elevator Winch Encoder Ticks", m_elevatorWinchMaster.getSelectedSensorPosition());
-        SmartDashboard.putNumber("Elevator Winch Stator Current", m_elevatorWinchMaster.getStatorCurrent());
+        //SmartDashboard.putNumber("Elevator Winch Stator Current", m_elevatorWinchMaster.getStatorCurrent());
     }
 
     public void resetEncoder() {
